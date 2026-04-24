@@ -1,0 +1,12 @@
+# 環境変数・認証情報（最重要）
+.env
+
+# OSが自動生成するファイル
+.DS_Store
+Thumbs.db
+
+# エディタの個人設定
+.vscode/
+
+# 依存パッケージ（Composerを使う場合）
+vendor/
