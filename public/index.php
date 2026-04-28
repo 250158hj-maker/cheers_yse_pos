@@ -7,5 +7,11 @@
 </head>
 <body>
   <h1>cheers!!!!!!!!!!!!</h1>
+  <table>
+    <tr>
+      <td>名に書けばいいの？</td>
+      <td>水曜休みってかなりいいよね</td>
+    </tr>
+  </table>
 </body>
 </html>
