@@ -7,10 +7,19 @@
 </head>
 <body>
   <h1>cheers!!!!!!!!!!!!</h1>
+  <p>家に帰りたい</p>
   <table>
     <tr>
-      <td>名に書けばいいの？</td>
-      <td>水曜休みってかなりいいよね</td>
+      <th>名前</th>
+      <th>年齢</th>
+    </tr>
+    <tr>
+      <td>鈴木和明</td>
+      <td>20</td>
+    </tr>
+    <tr>
+      <td>水戸匠</td>
+      <td>123</td>
     </tr>
   </table>
 </body>
