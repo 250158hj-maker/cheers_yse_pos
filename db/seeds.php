@@ -104,8 +104,8 @@ try {
     // 3. ユーザーデータの投入
     echo "Seeding users...\n";
     $userStmt = $pdo->prepare("INSERT INTO users (name, login_id, password, is_admin) VALUES (?, ?, ?, ?)");
-    $userStmt->execute(['管理者太郎', 'admin', password_hash('admin123', PASSWORD_DEFAULT), 1]);
-    $userStmt->execute(['カフェ1号店', 'store01', password_hash('store123', PASSWORD_DEFAULT), 0]);
+    $userStmt->execute(['管理者太郎', '0000', password_hash('0000', PASSWORD_DEFAULT), 1]);
+    $userStmt->execute(['カフェ1号店', '1111', password_hash('1111', PASSWORD_DEFAULT), 0]);
     $storeId = $pdo->lastInsertId(); // 最後に登録した店舗ID
 
     // 4. カテゴリデータの投入
