@@ -1,11 +1,7 @@
 <?php
-
-// DB接続設定ファイル（GitHubには上げないファイル）を読み込む想定です
 require_once __DIR__ . '/config/database.php';
 
 try {
-    // $pdo は config/database.php 内で接続済みの前提です
-    
     $sql = "
     -- ユーザーマスタ
     CREATE TABLE IF NOT EXISTS users (
@@ -65,7 +61,6 @@ try {
     // データベース（MySQL）に対してSQLを一気に実行します
     $pdo->exec($sql);
     echo "テーブルの作成が完了しました。\n";
-
 } catch (PDOException $e) {
     echo "データベースエラー: " . $e->getMessage() . "\n";
 }
