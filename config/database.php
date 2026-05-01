@@ -1,6 +1,11 @@
 <?php
 require_once __DIR__ . '/app.php';
 
+/**
+ * DB接続用関数
+ * 環境変数を使用しているファイルを限定し、保守性を高めるために必ずこの関数を使用してください。
+ * {@return} PDOオブジェクト（接続が成功した場合のみ）
+ */
 function get_db(): PDO
 {
     static $pdo = null;
