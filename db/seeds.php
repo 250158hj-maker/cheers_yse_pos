@@ -1,18 +1,17 @@
 <?php
+
 /**
  * db/seeds.php
  * カフェ（喫茶店）を想定したダミーデータ投入スクリプト
  * 他のファイルを変更せずに単体で動作するように構築
  */
-require_once __DIR__ . '../config/database.php';
+require_once __DIR__ . '/../config/database.php';
 
 
 try {
     $pdo = get_db();
-    echo "Connected to the database successfully.\n";
 
     // 1. テーブルの作成（存在しない場合）
-    echo "Creating tables if not exists...\n";
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
 
     $tables = [
@@ -69,7 +68,6 @@ try {
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
 
     // 2. データの全削除（リセットしたい場合のみ。ここでは重複を避けるために一度クリア）
-    echo "Clearing existing data...\n";
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
     $pdo->exec("TRUNCATE TABLE sale_items;");
     $pdo->exec("TRUNCATE TABLE sales;");
@@ -80,14 +78,12 @@ try {
     $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
 
     // 3. ユーザーデータの投入
-    echo "Seeding users...\n";
     $userStmt = $pdo->prepare("INSERT INTO users (name, login_id, password, is_admin) VALUES (?, ?, ?, ?)");
     $userStmt->execute(['管理者太郎', '0000', password_hash('0000', PASSWORD_DEFAULT), 1]);
     $userStmt->execute(['カフェ1号店', '1111', password_hash('1111', PASSWORD_DEFAULT), 0]);
     $storeId = $pdo->lastInsertId(); // 最後に登録した店舗ID
 
     // 4. カテゴリデータの投入
-    echo "Seeding categories...\n";
     $catStmt = $pdo->prepare("INSERT INTO categories (name) VALUES (?)");
     $categoryNames = ['コーヒー', 'ティー', 'デザート', '軽食'];
     $categoryIds = [];
@@ -97,7 +93,6 @@ try {
     }
 
     // 5. 商品データの投入
-    echo "Seeding products...\n";
     $products = [
         ['name' => 'ブレンドコーヒー', 'price' => 450, 'cat' => 'コーヒー'],
         ['name' => 'アイスコーヒー', 'price' => 480, 'cat' => 'コーヒー'],
@@ -120,7 +115,6 @@ try {
     }
 
     // 6. 売上データの投入（サンプル）
-    echo "Seeding sales samples...\n";
     $saleStmt = $pdo->prepare("INSERT INTO sales (store_id, receipt_no, total_amount, tax_rate, sold_at) VALUES (?, ?, ?, ?, ?)");
     $itemStmt = $pdo->prepare("INSERT INTO sale_items (sale_id, product_id, unit_price, quantity) VALUES (?, ?, ?, ?)");
 
@@ -138,7 +132,6 @@ try {
     $itemStmt->execute([$saleId2, $sampleProductIds[3]['id'], 500, 1]);
 
     echo "Seeding completed successfully!\n";
-
 } catch (PDOException $e) {
     echo "Database Error: " . $e->getMessage() . "\n";
 } catch (Exception $e) {
