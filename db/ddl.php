@@ -1,7 +1,8 @@
 <?php
-require_once __DIR__ . '/config/database.php';
+require_once __DIR__ . '/../config/database.php';
 
 try {
+    $pdo = get_db();
     $sql = "
     -- ユーザーマスタ
     CREATE TABLE IF NOT EXISTS users (
