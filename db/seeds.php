@@ -4,33 +4,11 @@
  * カフェ（喫茶店）を想定したダミーデータ投入スクリプト
  * 他のファイルを変更せずに単体で動作するように構築
  */
+require_once __DIR__ . '../config/database.php';
 
-require_once __DIR__ . '/../vendor/autoload.php';
-
-use Dotenv\Dotenv;
-
-// .envファイルを読み込む
-if (file_exists(__DIR__ . '/../.env')) {
-    $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
-    $dotenv->load();
-}
-
-// データベース接続設定（.envから取得）
-$host = $_ENV['DB_HOST'] ?? 'localhost';
-$dbname = $_ENV['DB_NAME'] ?? 'cheers_yse_pos';
-$user = $_ENV['DB_USER'] ?? 'root';
-$pass = $_ENV['DB_PASS'] ?? '';
-$charset = 'utf8mb4';
-
-$dsn = "mysql:host=$host;dbname=$dbname;charset=$charset";
-$options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => false,
-];
 
 try {
-    $pdo = new PDO($dsn, $user, $pass, $options);
+    $pdo = get_db();
     echo "Connected to the database successfully.\n";
 
     // 1. テーブルの作成（存在しない場合）
