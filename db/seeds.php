@@ -15,8 +15,8 @@ try {
     $users = [
         [
             'name' => '管理者',
-            'login_id' => '8888',
-            'password' => password_hash('8888', PASSWORD_DEFAULT),
+            'login_id' => '0000',
+            'password' => password_hash('0000', PASSWORD_DEFAULT),
             'is_admin' => 1
         ],
         [
