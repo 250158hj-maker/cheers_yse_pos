@@ -23,6 +23,8 @@ $isAdmin = $user['is_admin'] ?? false;
 $navItems = [];
 
 if ($isLoggedIn) {
+    $userName = htmlspecialchars($user['name'] ?? 'スタッフ');
+    
     if ($isAdmin) {
         // 管理者用メニュー
         $navItems[] = ['label' => '売上管理', 'url' => '/admin/index.php'];
@@ -31,9 +33,9 @@ if ($isLoggedIn) {
         // スタッフ用メニュー
         $navItems[] = ['label' => 'レジ操作', 'url' => '/register/index.php'];
     }
-    // ユーザー名表示とログアウト
-    $userName = htmlspecialchars($user['name'] ?? 'スタッフ');
-    $navItems[] = ['label' => "ログアウト ({$userName})", 'url' => '/logout.php', 'method' => 'POST'];
+    
+    // ログアウトボタンは別途管理
+    $logoutUrl = '/logout.php';
 } else {
     $navItems[] = ['label' => 'ログイン', 'url' => '/index.php'];
 }
@@ -51,11 +53,11 @@ if ($isLoggedIn) {
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title><?php echo $displayTitle; ?></title>
     
-    <!-- 共通スタイル（将来的に assets/css/style.css を作成することを想定） -->
     <style>
         :root {
             --primary-color: #2c3e50;
             --accent-color: #3498db;
+            --danger-color: #e74c3c;
             --text-color: #333;
             --bg-color: #f4f7f6;
             --header-bg: #ffffff;
@@ -87,6 +89,10 @@ if ($isLoggedIn) {
             color: var(--primary-color);
             text-decoration: none;
         }
+        .nav-wrapper {
+            display: flex;
+            align-items: center;
+        }
         .main-nav ul {
             display: flex;
             list-style: none;
@@ -96,19 +102,38 @@ if ($isLoggedIn) {
         .main-nav li {
             margin-left: 20px;
         }
-        .main-nav a, .nav-button-link {
+        .main-nav a {
             text-decoration: none;
             color: var(--text-color);
             font-size: 0.9rem;
             transition: color 0.3s;
-            background: none;
-            border: none;
-            padding: 0;
-            cursor: pointer;
-            font-family: inherit;
         }
-        .main-nav a:hover, .nav-button-link:hover {
+        .main-nav a:hover {
             color: var(--accent-color);
+        }
+        .user-info {
+            margin-left: 30px;
+            padding-left: 20px;
+            border-left: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        .logout-form {
+            margin-left: 15px;
+        }
+        .logout-button {
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background-color 0.3s;
+        }
+        .logout-button:hover {
+            background-color: #c0392b;
         }
         .container {
             max-width: 1200px;
@@ -127,21 +152,24 @@ if ($isLoggedIn) {
             <div class="logo">
                 <a href="/">Cheers YSE POS</a>
             </div>
-            <nav class="main-nav">
-                <ul>
-                    <?php foreach ($navItems as $item): ?>
-                        <li>
-                            <?php if (isset($item['method']) && $item['method'] === 'POST'): ?>
-                                <form action="<?php echo $item['url']; ?>" method="POST" style="display:inline;">
-                                    <button type="submit" class="nav-button-link"><?php echo $item['label']; ?></button>
-                                </form>
-                            <?php else: ?>
-                                <a href="<?php echo $item['url']; ?>"><?php echo $item['label']; ?></a>
-                            <?php endif; ?>
-                        </li>
-                    <?php endforeach; ?>
-                </ul>
-            </nav>
+            <div class="nav-wrapper">
+                <nav class="main-nav">
+                    <ul>
+                        <?php foreach ($navItems as $item): ?>
+                            <li><a href="<?php echo $item['url']; ?>"><?php echo $item['label']; ?></a></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </nav>
+
+                <?php if ($isLoggedIn): ?>
+                    <div class="user-info">
+                        <span>ログイン中: <strong><?php echo $userName; ?></strong></span>
+                        <form action="<?php echo $logoutUrl; ?>" method="POST" class="logout-form">
+                            <button type="submit" class="logout-button">ログアウト</button>
+                        </form>
+                    </div>
+                <?php endif; ?>
+            </div>
         </div>
     </header>
     <main class="container">
