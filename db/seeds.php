@@ -1,139 +1,73 @@
 <?php
-
 /**
  * db/seeds.php
- * カフェ（喫茶店）を想定したダミーデータ投入スクリプト
- * 他のファイルを変更せずに単体で動作するように構築
+ * 初期データ投入スクリプト
  */
+
 require_once __DIR__ . '/../config/database.php';
 
-
 try {
-    $pdo = get_db();
+    $db = get_db();
 
-    // 1. テーブルの作成（存在しない場合）
-    $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
+    echo "データ投入を開始します...\n";
 
-    $tables = [
-        "CREATE TABLE IF NOT EXISTS `users` (
-            `id` INT AUTO_INCREMENT PRIMARY KEY,
-            `name` VARCHAR(255) NOT NULL,
-            `login_id` VARCHAR(50) NOT NULL UNIQUE,
-            `password` VARCHAR(255) NOT NULL,
-            `is_admin` BOOLEAN DEFAULT FALSE,
-            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        ) ENGINE=InnoDB;",
-
-        "CREATE TABLE IF NOT EXISTS `products` (
-            `id` INT AUTO_INCREMENT PRIMARY KEY,
-            `name` VARCHAR(255) NOT NULL,
-            `price` INT NOT NULL,
-            `is_takeout` BOOLEAN DEFAULT FALSE,
-            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        ) ENGINE=InnoDB;",
-
-        "CREATE TABLE IF NOT EXISTS `categories` (
-            `id` INT AUTO_INCREMENT PRIMARY KEY,
-            `name` VARCHAR(255) NOT NULL UNIQUE,
-            `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        ) ENGINE=InnoDB;",
-
-        "CREATE TABLE IF NOT EXISTS `product_categories` (
-            `id` INT AUTO_INCREMENT PRIMARY KEY,
-            `product_id` INT NOT NULL,
-            `category_id` INT NOT NULL
-        ) ENGINE=InnoDB;",
-
-        "CREATE TABLE IF NOT EXISTS `sales` (
-            `id` INT AUTO_INCREMENT PRIMARY KEY,
-            `store_id` INT NOT NULL,
-            `receipt_no` VARCHAR(50),
-            `total_amount` INT NOT NULL,
-            `tax_rate` DECIMAL(4, 2) NOT NULL,
-            `sold_at` DATETIME NOT NULL
-        ) ENGINE=InnoDB;",
-
-        "CREATE TABLE IF NOT EXISTS `sale_items` (
-            `id` INT AUTO_INCREMENT PRIMARY KEY,
-            `sale_id` INT NOT NULL,
-            `product_id` INT NOT NULL,
-            `unit_price` INT NOT NULL,
-            `quantity` INT NOT NULL
-        ) ENGINE=InnoDB;"
+    // 1. ユーザーマスタの登録
+    $users = [
+        [
+            'name' => '管理者',
+            'login_id' => '8888',
+            'password' => password_hash('8888', PASSWORD_DEFAULT),
+            'is_admin' => 1
+        ],
+        [
+            'name' => '店舗スタッフ01',
+            'login_id' => '1111',
+            'password' => password_hash('1111', PASSWORD_DEFAULT),
+            'is_admin' => 0
+        ]
     ];
 
-    foreach ($tables as $sql) {
-        $pdo->exec($sql);
-    }
-    $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
-
-    // 2. データの全削除（リセットしたい場合のみ。ここでは重複を避けるために一度クリア）
-    $pdo->exec("SET FOREIGN_KEY_CHECKS = 0;");
-    $pdo->exec("TRUNCATE TABLE sale_items;");
-    $pdo->exec("TRUNCATE TABLE sales;");
-    $pdo->exec("TRUNCATE TABLE product_categories;");
-    $pdo->exec("TRUNCATE TABLE categories;");
-    $pdo->exec("TRUNCATE TABLE products;");
-    $pdo->exec("TRUNCATE TABLE users;");
-    $pdo->exec("SET FOREIGN_KEY_CHECKS = 1;");
-
-    // 3. ユーザーデータの投入
-    $userStmt = $pdo->prepare("INSERT INTO users (name, login_id, password, is_admin) VALUES (?, ?, ?, ?)");
-    $userStmt->execute(['管理者太郎', '0000', password_hash('0000', PASSWORD_DEFAULT), 1]);
-    $userStmt->execute(['カフェ1号店', '1111', password_hash('1111', PASSWORD_DEFAULT), 0]);
-    $storeId = $pdo->lastInsertId(); // 最後に登録した店舗ID
-
-    // 4. カテゴリデータの投入
-    $catStmt = $pdo->prepare("INSERT INTO categories (name) VALUES (?)");
-    $categoryNames = ['コーヒー', 'ティー', 'デザート', '軽食'];
-    $categoryIds = [];
-    foreach ($categoryNames as $name) {
-        $catStmt->execute([$name]);
-        $categoryIds[$name] = $pdo->lastInsertId();
+    $stmt = $db->prepare("INSERT IGNORE INTO users (name, login_id, password, is_admin) VALUES (?, ?, ?, ?)");
+    foreach ($users as $user) {
+        $stmt->execute([$user['name'], $user['login_id'], $user['password'], $user['is_admin']]);
+        echo "ユーザー追加: {$user['name']} (ID: {$user['login_id']})\n";
     }
 
-    // 5. 商品データの投入
+    // 2. カテゴリマスタの登録
+    $categories = ['フード', 'ドリンク', 'デザート'];
+    $cat_ids = [];
+    $stmt = $db->prepare("INSERT IGNORE INTO categories (name) VALUES (?)");
+    foreach ($categories as $cat) {
+        $stmt->execute([$cat]);
+        $cat_ids[$cat] = $db->lastInsertId();
+        echo "カテゴリ追加: {$cat}\n";
+    }
+
+    // 3. 商品マスタの登録
     $products = [
-        ['name' => 'ブレンドコーヒー', 'price' => 450, 'cat' => 'コーヒー'],
-        ['name' => 'アイスコーヒー', 'price' => 480, 'cat' => 'コーヒー'],
-        ['name' => 'カフェラテ', 'price' => 550, 'cat' => 'コーヒー'],
-        ['name' => 'ダージリンティー', 'price' => 500, 'cat' => 'ティー'],
-        ['name' => 'ベイクドチーズケーキ', 'price' => 600, 'cat' => 'デザート'],
-        ['name' => 'ガトーショコラ', 'price' => 620, 'cat' => 'デザート'],
-        ['name' => 'ミックスサンド', 'price' => 750, 'cat' => '軽食'],
+        ['name' => '生ビール', 'price' => 500, 'category' => 'ドリンク'],
+        ['name' => 'レモンサワー', 'price' => 450, 'category' => 'ドリンク'],
+        ['name' => '枝豆', 'price' => 300, 'category' => 'フード'],
+        ['name' => '唐揚げ', 'price' => 600, 'category' => 'フード'],
+        ['name' => 'バニラアイス', 'price' => 350, 'category' => 'デザート'],
     ];
 
-    $prodStmt = $pdo->prepare("INSERT INTO products (name, price, is_takeout) VALUES (?, ?, ?)");
-    $linkStmt = $pdo->prepare("INSERT INTO product_categories (product_id, category_id) VALUES (?, ?)");
+    $stmt_prod = $db->prepare("INSERT IGNORE INTO products (name, price, is_takeout) VALUES (?, ?, ?)");
+    $stmt_rel = $db->prepare("INSERT IGNORE INTO product_categories (product_id, category_id) VALUES (?, ?)");
 
-    $sampleProductIds = [];
-    foreach ($products as $p) {
-        $prodStmt->execute([$p['name'], $p['price'], 1]);
-        $prodId = $pdo->lastInsertId();
-        $linkStmt->execute([$prodId, $categoryIds[$p['cat']]]);
-        $sampleProductIds[] = ['id' => $prodId, 'price' => $p['price']];
+    foreach ($products as $prod) {
+        $stmt_prod->execute([$prod['name'], $prod['price'], 0]);
+        $prod_id = $db->lastInsertId();
+        
+        // カテゴリとの紐付け
+        if ($prod_id && isset($cat_ids[$prod['category']])) {
+            $stmt_rel->execute([$prod_id, $cat_ids[$prod['category']]]);
+        }
+        echo "商品追加: {$prod['name']} ({$prod['price']}円)\n";
     }
 
-    // 6. 売上データの投入（サンプル）
-    $saleStmt = $pdo->prepare("INSERT INTO sales (store_id, receipt_no, total_amount, tax_rate, sold_at) VALUES (?, ?, ?, ?, ?)");
-    $itemStmt = $pdo->prepare("INSERT INTO sale_items (sale_id, product_id, unit_price, quantity) VALUES (?, ?, ?, ?)");
+    echo "データ投入が完了しました。\n";
 
-    // 会計1: コーヒー2つ
-    $total1 = 450 * 2;
-    $saleStmt->execute([$storeId, 'REC-0001', $total1, 0.10, date('Y-m-d H:i:s', strtotime('-1 hour'))]);
-    $saleId1 = $pdo->lastInsertId();
-    $itemStmt->execute([$saleId1, $sampleProductIds[0]['id'], 450, 2]);
-
-    // 会計2: ケーキ1つ + ティー1つ
-    $total2 = 600 + 500;
-    $saleStmt->execute([$storeId, 'REC-0002', $total2, 0.10, date('Y-m-d H:i:s')]);
-    $saleId2 = $pdo->lastInsertId();
-    $itemStmt->execute([$saleId2, $sampleProductIds[4]['id'], 600, 1]);
-    $itemStmt->execute([$saleId2, $sampleProductIds[3]['id'], 500, 1]);
-
-    echo "Seeding completed successfully!\n";
 } catch (PDOException $e) {
-    echo "Database Error: " . $e->getMessage() . "\n";
-} catch (Exception $e) {
-    echo "Error: " . $e->getMessage() . "\n";
+    echo "エラーが発生しました: " . $e->getMessage() . "\n";
 }

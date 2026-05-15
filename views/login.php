@@ -16,6 +16,9 @@ unset($_SESSION['error']); // 一度表示したら消去
 // 3. 入力値の保持（エラー時に再入力させないため）
 $lastLoginId = $_SESSION['last_login_id'] ?? '';
 unset($_SESSION['last_login_id']);
+
+// 4. CSRFトークンの生成
+$csrfToken = Auth::generateCsrfToken();
 ?>
 
 <!-- --- 描画部 (Rendering) --- -->
@@ -32,17 +35,22 @@ unset($_SESSION['last_login_id']);
         <?php endif; ?>
 
         <form action="/login.php" method="POST" class="login-form">
+            <!-- CSRFトークン -->
+            <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
+            
             <div class="form-group">
-                <label for="login_id">店舗ID または 管理者ID</label>
+                <label for="login_id">店舗ID または 管理者ID (数字4桁)</label>
                 <input type="text" id="login_id" name="login_id" 
                        value="<?php echo htmlspecialchars($lastLoginId); ?>" 
-                       required autofocus placeholder="IDを入力してください">
+                       inputmode="numeric" pattern="\d{4}" maxlength="4"
+                       required autofocus placeholder="例: 1111">
             </div>
 
             <div class="form-group">
-                <label for="password">パスワード</label>
+                <label for="password">パスワード (数字4桁)</label>
                 <input type="password" id="password" name="password" 
-                       required placeholder="パスワードを入力してください">
+                       inputmode="numeric" pattern="\d{4}" maxlength="4"
+                       required placeholder="例: 1234">
             </div>
 
             <div class="form-actions">
