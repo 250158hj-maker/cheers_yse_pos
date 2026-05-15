@@ -75,7 +75,7 @@ class Database
     /**
      * スキーマ定義（DDL）専用の生SQL一括実行。複数文のCREATE TABLE等を
      * プリペアド化せず実行する用途に限定する。ユーザー入力を渡してはならない
-     * （データ操作は必ず fetch*/execute のプリペアドを使うこと）。
+     * （データ操作は必ず fetch / execute のプリペアドを使うこと）。
      */
     public function runSchema(string $sql): void
     {
