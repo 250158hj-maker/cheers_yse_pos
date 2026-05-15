@@ -5,6 +5,11 @@
  * --- 処理部 (Processing) ---
  */
 
+// セッション開始
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 // Authクラスを読み込む
 require_once __DIR__ . '/../src/Auth.php';
 
@@ -37,7 +42,7 @@ $csrfToken = Auth::generateCsrfToken();
             </div>
         <?php endif; ?>
 
-        <form action="/login.php" method="POST" class="login-form">
+        <form action="./login.php" method="POST" class="login-form">
             <!-- CSRFトークン -->
             <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
             

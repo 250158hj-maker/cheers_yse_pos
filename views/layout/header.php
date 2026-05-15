@@ -3,48 +3,49 @@
  * header.php
  * 
  * --- 処理部 (Processing) ---
- * 描画に必要なロジックや変数の準備を行います。
  */
 
-// ページタイトルの設定（各ページで $pageTitle が定義されている想定）
+require_once __DIR__ . '/../../src/Auth.php';
+
+// 1. ページタイトルの設定
 $displayTitle = isset($pageTitle) ? htmlspecialchars($pageTitle) . " | Cheers YSE POS" : "Cheers YSE POS";
 
-// セッションが開始されていない場合は開始（共通ヘッダーで行うのが一般的）
+// 2. セッション開始
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// ユーザー情報の取得（仮の実装：Authクラスの実装に合わせて調整が必要）
+// 3. ユーザー情報の取得
 $user = $_SESSION['user'] ?? null;
 $isLoggedIn = !empty($user);
 $isAdmin = $user['is_admin'] ?? false;
+$userName = $isLoggedIn ? htmlspecialchars($user['name'] ?? 'スタッフ') : '';
 
-// ナビゲーションメニューの動的生成
-$navItems = [];
-
-if ($isLoggedIn) {
-    $userName = htmlspecialchars($user['name'] ?? 'スタッフ');
-    
-    if ($isAdmin) {
-        // 管理者用メニュー
-        $navItems[] = ['label' => '売上管理', 'url' => '/admin/index.php'];
-        $navItems[] = ['label' => '商品設定', 'url' => '/admin/products/index.php'];
-    } else {
-        // スタッフ用メニュー
-        $navItems[] = ['label' => 'レジ操作', 'url' => '/register/index.php'];
-    }
-    
-    // ログアウトボタンは別途管理
-    $logoutUrl = '/logout.php';
+// 4. ベースURLの計算 (サブディレクトリ環境対応)
+$scriptName = $_SERVER['SCRIPT_NAME'];
+$publicPos = strpos($scriptName, '/public/');
+if ($publicPos !== false) {
+    $baseUrl = substr($scriptName, 0, $publicPos + 8);
 } else {
-    $navItems[] = ['label' => 'ログイン', 'url' => '/index.php'];
+    $baseUrl = '/';
 }
 
+// 5. ナビゲーションメニューの生成
+$navItems = [];
+if ($isLoggedIn) {
+    if ($isAdmin) {
+        $navItems[] = ['label' => '売上管理', 'url' => $baseUrl . 'admin/index.php'];
+        $navItems[] = ['label' => '商品設定', 'url' => $baseUrl . 'admin/products/index.php'];
+    } else {
+        $navItems[] = ['label' => 'レジ操作', 'url' => $baseUrl . 'register/index.php'];
+    }
+} else {
+    $navItems[] = ['label' => 'ログイン', 'url' => $baseUrl . 'index.php'];
+}
+
+$logoutUrl = $baseUrl . 'logout.php';
+$csrfToken = Auth::generateCsrfToken();
 ?>
-<!-- 
-  --- 描画部 (Rendering) ---
-  HTMLの出力を行います。
--->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -52,7 +53,6 @@ if ($isLoggedIn) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title><?php echo $displayTitle; ?></title>
-    
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -62,95 +62,27 @@ if ($isLoggedIn) {
             --bg-color: #f4f7f6;
             --header-bg: #ffffff;
         }
-        body {
-            margin: 0;
-            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
-        }
-        .main-header {
-            background-color: var(--header-bg);
-            border-bottom: 1px solid #ddd;
-            padding: 0 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .header-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-            height: 60px;
-        }
-        .logo a {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-        .nav-wrapper {
-            display: flex;
-            align-items: center;
-        }
-        .main-nav ul {
-            display: flex;
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-        .main-nav li {
-            margin-left: 20px;
-        }
-        .main-nav a {
-            text-decoration: none;
-            color: var(--text-color);
-            font-size: 0.9rem;
-            transition: color 0.3s;
-        }
-        .main-nav a:hover {
-            color: var(--accent-color);
-        }
-        .user-info {
-            margin-left: 30px;
-            padding-left: 20px;
-            border-left: 1px solid #eee;
-            display: flex;
-            align-items: center;
-            font-size: 0.9rem;
-        }
-        .logout-form {
-            margin-left: 15px;
-        }
-        .logout-button {
-            background-color: var(--danger-color);
-            color: white;
-            border: none;
-            padding: 5px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: background-color 0.3s;
-        }
-        .logout-button:hover {
-            background-color: #c0392b;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 20px auto;
-            padding: 20px;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            min-height: 80vh;
-        }
+        body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; }
+        .main-header { background-color: var(--header-bg); border-bottom: 1px solid #ddd; padding: 0 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .header-container { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; height: 60px; }
+        .logo a { font-size: 1.5rem; font-weight: bold; color: var(--primary-color); text-decoration: none; }
+        .nav-wrapper { display: flex; align-items: center; }
+        .main-nav ul { display: flex; list-style: none; margin: 0; padding: 0; }
+        .main-nav li { margin-left: 20px; }
+        .main-nav a { text-decoration: none; color: var(--text-color); font-size: 0.9rem; transition: color 0.3s; }
+        .main-nav a:hover { color: var(--accent-color); }
+        .user-info { margin-left: 30px; padding-left: 20px; border-left: 1px solid #eee; display: flex; align-items: center; font-size: 0.9rem; }
+        .logout-form { margin-left: 15px; }
+        .logout-button { background-color: var(--danger-color); color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+        .logout-button:hover { background-color: #c0392b; }
+        .container { max-width: 1200px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); min-height: 80vh; }
     </style>
 </head>
 <body>
     <header class="main-header">
         <div class="header-container">
             <div class="logo">
-                <a href="/">Cheers YSE POS</a>
+                <a href="<?php echo $baseUrl; ?>index.php">Cheers YSE POS</a>
             </div>
             <div class="nav-wrapper">
                 <nav class="main-nav">
@@ -160,11 +92,11 @@ if ($isLoggedIn) {
                         <?php endforeach; ?>
                     </ul>
                 </nav>
-
                 <?php if ($isLoggedIn): ?>
                     <div class="user-info">
                         <span>ログイン中: <strong><?php echo $userName; ?></strong></span>
                         <form action="<?php echo $logoutUrl; ?>" method="POST" class="logout-form">
+                            <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
                             <button type="submit" class="logout-button">ログアウト</button>
                         </form>
                     </div>
