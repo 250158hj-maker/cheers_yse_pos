@@ -5,6 +5,9 @@
  * --- 処理部 (Processing) ---
  */
 
+// Authクラスを読み込む
+require_once __DIR__ . '/../src/Auth.php';
+
 // 1. ページメタ情報の設定
 $pageTitle = 'ログイン';
 
@@ -22,7 +25,7 @@ $csrfToken = Auth::generateCsrfToken();
 ?>
 
 <!-- --- 描画部 (Rendering) --- -->
-<?php include 'layout/header.php'; ?>
+<?php include __DIR__ . '/layout/header.php'; ?>
 
 <div class="login-page">
     <div class="login-card">
@@ -123,4 +126,5 @@ $csrfToken = Auth::generateCsrfToken();
     }
 </style>
 
-<?php include 'layout/footer.php'; ?>
+
+<?php include __DIR__ . '/layout/footer.php'; ?>
