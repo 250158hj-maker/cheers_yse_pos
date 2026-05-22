@@ -48,6 +48,57 @@ class Sale
     }
 
     /**
+     * 新規売上を登録する
+     * 
+     * @param int $storeId 店舗ID（スタッフのID）
+     * @param array $data ['total_amount', 'items' => [['id', 'name', 'price', 'quantity'], ...]]
+     * @return bool
+     */
+    public function create(int $storeId, array $data): bool
+    {
+        try {
+            $this->db->beginTransaction();
+
+            // 1. sales テーブルへ挿入
+            $receiptNo = date('Ymd-His-') . sprintf('%04d', rand(0, 9999));
+            $taxRate = 0.10; // 固定（必要に応じてTO区分で8%にする等のロジックを追加）
+
+            $sqlSale = "INSERT INTO sales (store_id, receipt_no, total_amount, tax_rate, sold_at) 
+                        VALUES (:store_id, :receipt_no, :total_amount, :tax_rate, NOW())";
+            
+            $this->db->execute($sqlSale, [
+                'store_id' => $storeId,
+                'receipt_no' => $receiptNo,
+                'total_amount' => $data['total_amount'],
+                'tax_rate' => $taxRate
+            ]);
+
+            $saleId = $this->db->lastInsertId();
+
+            // 2. sale_items テーブルへ挿入
+            $sqlItem = "INSERT INTO sale_items (sale_id, product_id, product_name, unit_price, quantity) 
+                        VALUES (:sale_id, :product_id, :product_name, :unit_price, :quantity)";
+            
+            foreach ($data['items'] as $item) {
+                $this->db->execute($sqlItem, [
+                    'sale_id' => $saleId,
+                    'product_id' => $item['id'],
+                    'product_name' => $item['name'],
+                    'unit_price' => $item['price'],
+                    'quantity' => $item['quantity']
+                ]);
+            }
+
+            $this->db->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            error_log($e->getMessage());
+            return false;
+        }
+    }
+
+    /**
      * 共通のクエリビルドロジック
      * 
      * @param string $select
