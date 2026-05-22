@@ -22,7 +22,6 @@ try {
     // rollBack で元データごと保全される
     $db->execute("DELETE FROM sale_items");
     $db->execute("DELETE FROM sales");
-    $db->execute("DELETE FROM product_categories");
     $db->execute("DELETE FROM products");
     $db->execute("DELETE FROM categories");
     $db->execute("DELETE FROM users");
@@ -54,28 +53,27 @@ try {
 
     $sampleProductIds = [];
     foreach ($products as $p) {
-        $db->execute("INSERT INTO products (name, price, is_takeout) VALUES (?, ?, ?)", [$p['name'], $p['price'], 1]);
+        $db->execute("INSERT INTO products (name, price, category_id, is_takeout) VALUES (?, ?, ?, ?)", [$p['name'], $p['price'], $categoryIds[$p['cat']], 1]);
         $prodId = $db->lastInsertId();
-        $db->execute("INSERT INTO product_categories (product_id, category_id) VALUES (?, ?)", [$prodId, $categoryIds[$p['cat']]]);
         $sampleProductIds[] = ['id' => $prodId, 'price' => $p['price']];
     }
 
     // 売上データの投入（サンプル）
     $saleSql = "INSERT INTO sales (store_id, receipt_no, total_amount, tax_rate, sold_at) VALUES (?, ?, ?, ?, ?)";
-    $itemSql = "INSERT INTO sale_items (sale_id, product_id, unit_price, quantity) VALUES (?, ?, ?, ?)";
+    $itemSql = "INSERT INTO sale_items (sale_id, product_id, product_name, unit_price, quantity) VALUES (?, ?, ?, ?, ?)";
 
     // 会計1: コーヒー2つ
     $total1 = 450 * 2;
     $db->execute($saleSql, [$storeId, 'REC-0001', $total1, 0.10, date('Y-m-d H:i:s', strtotime('-1 hour'))]);
     $saleId1 = $db->lastInsertId();
-    $db->execute($itemSql, [$saleId1, $sampleProductIds[0]['id'], 450, 2]);
+    $db->execute($itemSql, [$saleId1, $sampleProductIds[0]['id'],'ブレンドコーヒー', 450, 2]);
 
     // 会計2: ケーキ1つ + ティー1つ
     $total2 = 600 + 500;
     $db->execute($saleSql, [$storeId, 'REC-0002', $total2, 0.10, date('Y-m-d H:i:s')]);
     $saleId2 = $db->lastInsertId();
-    $db->execute($itemSql, [$saleId2, $sampleProductIds[4]['id'], 600, 1]);
-    $db->execute($itemSql, [$saleId2, $sampleProductIds[3]['id'], 500, 1]);
+    $db->execute($itemSql, [$saleId2, $sampleProductIds[4]['id'], 'ベイクドチーズケーキ', 600, 1]);
+    $db->execute($itemSql, [$saleId2, $sampleProductIds[3]['id'], 'ダージリンティー', 500, 1]);
 
     $db->commit();
     echo "Seeding completed successfully!\n";

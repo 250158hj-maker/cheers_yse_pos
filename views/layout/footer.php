@@ -13,12 +13,13 @@ $copyRight = "© {$currentYear} Cheers YSE POS All Rights Reserved.";
 -->
     </main> <!-- .container end -->
     
-    <footer class="main-footer" style="text-align: center; padding: 20px 0; color: #777; font-size: 0.8rem;">
-        <div class="footer-container">
-            <p class="copyright"><?php echo htmlspecialchars($copyRight); ?></p>
+    <footer class="mt-5 py-4 border-top text-center text-muted small">
+        <div class="container">
+            <p class="mb-0"><?php echo htmlspecialchars($copyRight); ?></p>
         </div>
     </footer>
 
-    <!-- 共通JavaScriptがあればここに記述 -->
+    <!-- Bootstrap 5 JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
