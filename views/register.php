@@ -156,6 +156,5 @@
 <!-- レジ画面専用JavaScript -->
 <script src="../js/register.js"></script>
 
-<?php require __DIR__ . '/layout/footer.php'; ?>
 
 
