@@ -32,104 +32,61 @@ $csrfToken = Auth::generateCsrfToken();
 <!-- --- 描画部 (Rendering) --- -->
 <?php include __DIR__ . '/layout/header.php'; ?>
 
-<div class="login-page">
-    <div class="login-card">
-        <h2 class="login-title">ログイン</h2>
-        
-        <?php if ($errorMessage): ?>
-            <div class="error-alert">
-                <?php echo htmlspecialchars($errorMessage); ?>
+<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="col-md-5">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-primary text-white text-center py-4">
+                <h3 class="mb-0">Cheers YSE POS</h3>
+                <p class="mb-0 small opacity-75">システムの利用にはログインが必要です</p>
             </div>
-        <?php endif; ?>
+            <div class="card-body p-5">
+                <?php if ($errorMessage): ?>
+                    <div class="alert alert-danger d-flex align-items-center" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <div><?php echo htmlspecialchars($errorMessage); ?></div>
+                    </div>
+                <?php endif; ?>
 
-        <form action="./login.php" method="POST" class="login-form">
-            <!-- CSRFトークン -->
-            <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
-            
-            <div class="form-group">
-                <label for="login_id">店舗ID または 管理者ID (数字4桁)</label>
-                <input type="text" id="login_id" name="login_id" 
-                       value="<?php echo htmlspecialchars($lastLoginId); ?>" 
-                       inputmode="numeric" pattern="\d{4}" maxlength="4"
-                       required autofocus placeholder="例: 1111">
-            </div>
+                <form action="./login.php" method="POST">
+                    <!-- CSRFトークン -->
+                    <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
+                    
+                    <div class="mb-4">
+                        <label for="login_id" class="form-label fw-bold">店舗ID または 管理者ID</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
+                            <input type="text" id="login_id" name="login_id" 
+                                   class="form-control form-control-lg"
+                                   value="<?php echo htmlspecialchars($lastLoginId); ?>" 
+                                   inputmode="numeric" pattern="\d{4}" maxlength="4"
+                                   required autofocus placeholder="数字4桁">
+                        </div>
+                    </div>
 
-            <div class="form-group">
-                <label for="password">パスワード (数字4桁)</label>
-                <input type="password" id="password" name="password" 
-                       inputmode="numeric" pattern="\d{4}" maxlength="4"
-                       required placeholder="例: 1234">
-            </div>
+                    <div class="mb-4">
+                        <label for="password" class="form-label fw-bold">パスワード</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-lock"></i></span>
+                            <input type="password" id="password" name="password" 
+                                   class="form-control form-control-lg"
+                                   inputmode="numeric" pattern="\d{4}" maxlength="4"
+                                   required placeholder="数字4桁">
+                        </div>
+                    </div>
 
-            <div class="form-actions">
-                <button type="submit" class="btn-login">ログイン</button>
+                    <div class="d-grid gap-2 mt-5">
+                        <button type="submit" class="btn btn-primary btn-lg text-white fw-bold">ログイン</button>
+                    </div>
+                </form>
             </div>
-        </form>
+            <div class="card-footer bg-light text-center py-3">
+                <small class="text-muted">パスワードを忘れた場合は管理者へお問い合わせください</small>
+            </div>
+        </div>
     </div>
 </div>
 
-<style>
-    /* ログイン画面固有のスタイル */
-    .login-page {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 60vh;
-    }
-    .login-card {
-        width: 100%;
-        max-width: 400px;
-        padding: 30px;
-        border: 1px solid #eee;
-        border-radius: 8px;
-        background: #fff;
-    }
-    .login-title {
-        text-align: center;
-        margin-bottom: 30px;
-        color: var(--primary-color);
-    }
-    .error-alert {
-        background-color: #fce4e4;
-        border: 1px solid #fcc2c2;
-        color: #cc0000;
-        padding: 12px;
-        border-radius: 4px;
-        margin-bottom: 20px;
-        font-size: 0.9rem;
-    }
-    .form-group {
-        margin-bottom: 20px;
-    }
-    .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        font-weight: bold;
-        font-size: 0.9rem;
-    }
-    .form-group input {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-    }
-    .btn-login {
-        width: 100%;
-        padding: 14px;
-        background-color: var(--accent-color);
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-size: 1rem;
-        font-weight: bold;
-        cursor: pointer;
-        transition: opacity 0.3s;
-    }
-    .btn-login:hover {
-        opacity: 0.9;
-    }
-</style>
-
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
 <?php include __DIR__ . '/layout/footer.php'; ?>

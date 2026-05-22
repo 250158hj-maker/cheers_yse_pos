@@ -53,55 +53,40 @@ $csrfToken = Auth::generateCsrfToken();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title><?php echo $displayTitle; ?></title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #2c3e50;
-            --accent-color: #3498db;
-            --danger-color: #e74c3c;
-            --text-color: #333;
-            --bg-color: #f4f7f6;
-            --header-bg: #ffffff;
-        }
-        body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; }
-        .main-header { background-color: var(--header-bg); border-bottom: 1px solid #ddd; padding: 0 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .header-container { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; height: 60px; }
-        .logo a { font-size: 1.5rem; font-weight: bold; color: var(--primary-color); text-decoration: none; }
-        .nav-wrapper { display: flex; align-items: center; }
-        .main-nav ul { display: flex; list-style: none; margin: 0; padding: 0; }
-        .main-nav li { margin-left: 20px; }
-        .main-nav a { text-decoration: none; color: var(--text-color); font-size: 0.9rem; transition: color 0.3s; }
-        .main-nav a:hover { color: var(--accent-color); }
-        .user-info { margin-left: 30px; padding-left: 20px; border-left: 1px solid #eee; display: flex; align-items: center; font-size: 0.9rem; }
-        .logout-form { margin-left: 15px; }
-        .logout-button { background-color: var(--danger-color); color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
-        .logout-button:hover { background-color: #c0392b; }
-        .container { max-width: 1200px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); min-height: 80vh; }
+        body { background-color: #f8f9fa; }
+        .container-main { min-height: 80vh; padding-top: 2rem; padding-bottom: 2rem; }
     </style>
 </head>
 <body>
-    <header class="main-header">
-        <div class="header-container">
-            <div class="logo">
-                <a href="<?php echo $baseUrl; ?>index.php">Cheers YSE POS</a>
-            </div>
-            <div class="nav-wrapper">
-                <nav class="main-nav">
-                    <ul>
-                        <?php foreach ($navItems as $item): ?>
-                            <li><a href="<?php echo $item['url']; ?>"><?php echo $item['label']; ?></a></li>
-                        <?php endforeach; ?>
-                    </ul>
-                </nav>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="<?php echo $baseUrl; ?>index.php">Cheers YSE POS</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <?php foreach ($navItems as $item): ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?php echo $item['url']; ?>"><?php echo $item['label']; ?></a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
                 <?php if ($isLoggedIn): ?>
-                    <div class="user-info">
-                        <span>ログイン中: <strong><?php echo $userName; ?></strong></span>
-                        <form action="<?php echo $logoutUrl; ?>" method="POST" class="logout-form">
+                    <div class="d-flex align-items-center">
+                        <span class="navbar-text me-3 text-light">
+                            ログイン中: <strong><?php echo $userName; ?></strong>
+                        </span>
+                        <form action="<?php echo $logoutUrl; ?>" method="POST" class="m-0">
                             <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
-                            <button type="submit" class="logout-button">ログアウト</button>
+                            <button type="submit" class="btn btn-outline-danger btn-sm">ログアウト</button>
                         </form>
                     </div>
                 <?php endif; ?>
             </div>
         </div>
-    </header>
-    <main class="container">
+    </nav>
+    <main class="container container-main bg-white shadow-sm rounded">
