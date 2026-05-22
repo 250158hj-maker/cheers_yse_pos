@@ -62,7 +62,7 @@ class Sale
         // カテゴリ絞り込みがある場合はJOINが必要
         if (!empty($filters['category_id'])) {
             $sql .= " JOIN sale_items si ON s.id = si.sale_id
-                      JOIN product_categories pc ON si.product_id = pc.product_id";
+                      JOIN products p ON si.product_id = p.id";
         }
 
         $whereClauses = [];
@@ -73,7 +73,7 @@ class Sale
         }
 
         if (!empty($filters['category_id'])) {
-            $whereClauses[] = "pc.category_id = :category_id";
+            $whereClauses[] = "p.category_id = :category_id";
             $params['category_id'] = $filters['category_id'];
         }
 
