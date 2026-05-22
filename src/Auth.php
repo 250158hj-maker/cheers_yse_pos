@@ -4,7 +4,7 @@
  * 認証・セッション管理クラス
  */
 
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/Database.php';
 
 class Auth {
     /**
@@ -15,10 +15,9 @@ class Auth {
      */
     public static function login($loginId, $password) {
         try {
-            $db = get_db();
-            $stmt = $db->prepare("SELECT * FROM users WHERE login_id = ? LIMIT 1");
-            $stmt->execute([$loginId]);
-            $user = $stmt->fetch();
+            $db = new Database();
+            $sql = "SELECT * FROM users WHERE login_id = :login_id";
+            $user = $db->fetchOne($sql, ['login_id' => $loginId]);
 
             // パスワード照合 (password_hash で保存されている前提)
             // もし開発初期で平文パスワードを使用する場合は $password === $user['password'] に調整
