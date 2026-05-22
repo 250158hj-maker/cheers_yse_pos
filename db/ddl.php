@@ -22,7 +22,7 @@ try {
         name VARCHAR(255) NOT NULL,
         price INT NOT NULL,
         category_id INT NOT NULL,
-        FOREIGN KEY (category_id) REFERENCES categories(id)
+        FOREIGN KEY (category_id) REFERENCES categories(id),
         is_takeout BOOLEAN DEFAULT FALSE
     ) ENGINE=InnoDB;
 
