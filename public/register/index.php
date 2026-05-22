@@ -5,6 +5,7 @@
  */
 
 require_once __DIR__ . '/../../src/Auth.php';
+require_once __DIR__ . '/../../src/Product.php';
 
 // 1. 認証ガード: ログインしていない場合はログイン画面へ強制リダイレクト
 Auth::requireLogin();
@@ -15,7 +16,10 @@ Auth::requireLogin();
 $pageTitle = 'レジ操作';
 $user = Auth::user();
 
-// ※ ここで商品の取得ロジックなどを呼び出すことになります。
+// 商品データ・カテゴリデータの取得
+$productModel = new Product();
+$categories = $productModel->getAllCategories();
+$products = $productModel->getAll();
 
 /**
  * --- 描画部 (Rendering) ---
