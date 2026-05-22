@@ -1,57 +1,65 @@
 <?php
-// src/Product.php [cite: 455]
-class Product {
-    private $pdo;
+require_once __DIR__ . '/../src/Database.php';
 
-    public function __construct($pdo) {
-        $this->pdo = $pdo;
+class Product
+{
+    private Database $db;
+
+    public function __construct(Database $db)
+    {
+        $this->db = $db;
     }
 
-    // 商品一覧の取得（フィルタ・検索対応） [cite: 728]
-    public function getAll($categoryId = null, $keyword = null) {
-        $sql = "SELECT p.*, c.name as category_name 
-                FROM products p 
-                LEFT JOIN product_categories pc ON p.id = pc.product_id
-                LEFT JOIN categories c ON pc.category_id = c.id
-                WHERE 1=1";
-        
+    /**
+     * カテゴリ一覧を取得する。
+     * フォームのプルダウンと絞り込みUIで使用する。
+     */
+    public function getAllCategories(): array
+    {
+        return $this->db->fetchAll("SELECT id, name FROM categories ORDER BY id");
+    }
+
+    /**
+     * 商品一覧を取得する。
+     * 引数を省略すると全件取得。categoryId・keyword を渡すと絞り込む。
+     * 両方渡した場合はAND条件で絞り込む。
+     *
+     * @param int|null    $categoryId カテゴリID（nullなら絞り込みなし）
+     * @param string|null $keyword    商品名の部分一致キーワード（nullなら絞り込みなし）
+     */
+    public function getAll(?int $categoryId = null, ?string $keyword = null): array
+    {
+        $sql = "
+            SELECT
+                p.id,
+                p.name,
+                p.price,
+                p.is_takeout,
+                c.id   AS category_id,
+                c.name AS category_name
+            FROM products p
+            JOIN categories c ON p.category_id = c.id
+        ";
+
         $params = [];
-        if ($categoryId) {
-            $sql .= " AND c.id = :category_id";
-            $params['category_id'] = $categoryId;
+        $conditions = [];
+
+        if ($categoryId !== null) {
+            $conditions[] = "p.category_id = ?";
+            $params[] = $categoryId;
         }
-        if ($keyword) {
-            $sql .= " AND p.name LIKE :keyword";
-            $params['keyword'] = "%$keyword%";
+
+        if ($keyword !== null && $keyword !== '') {
+            $conditions[] = "p.name LIKE ?";
+            $params[] = "%{$keyword}%";
         }
-        
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->fetchAll();
-    }
 
-    // 新規登録 [cite: 726]
-    public function create($name, $price, $isTakeout, $categoryId) {
-        $this->pdo->beginTransaction();
-        try {
-            $stmt = $this->pdo->prepare("INSERT INTO products (name, price, is_takeout) VALUES (?, ?, ?)");
-            $stmt->execute([$name, $price, $isTakeout]);
-            $productId = $this->pdo->lastInsertId();
-
-            $stmt = $this->pdo->prepare("INSERT INTO product_categories (product_id, category_id) VALUES (?, ?)");
-            $stmt->execute([$productId, $categoryId]);
-
-            $this->pdo->commit();
-            return true;
-        } catch (Exception $e) {
-            $this->pdo->rollBack();
-            return false;
+        if (!empty($conditions)) {
+            $sql .= " WHERE " . implode(" AND ", $conditions);
         }
-    }
 
-    // 削除 [cite: 733]
-    public function delete($id) {
-        $stmt = $this->pdo->prepare("DELETE FROM products WHERE id = ?");
-        return $stmt->execute([$id]);
+        $sql .= " ORDER BY c.id, p.id";
+
+        return $this->db->fetchAll($sql, $params);
     }
 }

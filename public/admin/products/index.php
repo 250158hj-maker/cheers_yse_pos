@@ -2,26 +2,32 @@
 // セッション開始と認証チェック
 session_start();
 
-// 本来はここでDB接続とデータ取得を行う
-// require_once __DIR__ . '/../../../src/Database.php';
-// $db = new Database();
+// 未認証ならトップへリダイレクト
+if (empty($_SESSION['user_id']) || empty($_SESSION['is_admin'])) {
+    header('Location: /index.php');
+    exit;
+}
 
-// 11～22行目をSQLに置き換える。
+require_once __DIR__ . '/../../../src/Database.php';
+require_once __DIR__ . '/../../../src/Product.php';
 
-// --- データの準備（ビューに渡すための変数） ---
-$categories = [
-    ['id' => 1, 'name' => 'フード'],
-    ['id' => 2, 'name' => 'ドリンク'],
-    ['id' => 3, 'name' => 'デザート']
-];
+$db      = new Database();
+$product = new Product($db);
 
-$products = [
-    ['id' => 1, 'name' => 'コーヒー', 'price' => 400, 'category' => 'ドリンク', 'is_takeout' => 0],
-    ['id' => 2, 'name' => 'カレー', 'price' => 800, 'category' => 'フード', 'is_takeout' => 0],
-    ['id' => 3, 'name' => 'サンドイッチ', 'price' => 500, 'category' => 'フード', 'is_takeout' => 1],
-];
+// 絞り込み条件をGETパラメータから取得
+$categoryId = isset($_GET['category_id']) && $_GET['category_id'] !== ''
+    ? (int)$_GET['category_id']
+    : null;
 
-// --- ビュー（画面）の呼び出し ---
-// public/admin/products から見て、views/admin/products/index.php を読み込む
-// ここで include することで、上記で定義した $categories や $products がビュー側で使えるようになります
+$keyword = isset($_GET['keyword']) && $_GET['keyword'] !== ''
+    ? $_GET['keyword']
+    : null;
+
+// カテゴリ一覧を取得（プルダウン用）
+$categories = $product->getAllCategories();
+
+// 商品一覧を取得（絞り込み条件があれば絞り込む）
+$products = $product->getAll($categoryId, $keyword);
+
+// ビューの呼び出し
 require_once __DIR__ . '/../../../views/admin/products.php';
