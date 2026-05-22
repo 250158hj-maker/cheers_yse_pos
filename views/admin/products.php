@@ -1,184 +1,140 @@
-<?php include __DIR__ . '/../layout/header.php'; ?>
+<?php require_once __DIR__ . '/../layout/header.php'; ?>
 
-<style>
-    /* 王道スマート・テーマ（Airレジ風）の定義 */
-    :root {
-        --base-bg: #F4F6F8;
-        --content-bg: #FFFFFF;
-        --accent-blue: #00A4E5;
-        --text-dark: #333333;
-        --alert-red: #DC3545;
-        --border-color: #E0E0E0;
-    }
+<div class="container-fluid">
+    <div class="row">
 
-    body {
-        background-color: var(--base-bg);
-        color: var(--text-dark);
-        font-family: "Helvetica Neue", Arial, sans-serif;
-        margin: 0;
-    }
+        <!-- 左サイドバー -->
+        <nav class="col-md-2 bg-light min-vh-100 p-3">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="/admin/index.php">売上管理</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active fw-bold" href="/admin/products/index.php">商品設定</a>
+                </li>
+            </ul>
+        </nav>
 
-    .admin-layout {
-        display: flex;
-        min-height: 100vh;
-    }
+        <!-- 右メインエリア  -->
+        <main class="col-md-10 p-4">
 
-    /* 左サイドバー */
-    .sidebar {
-        width: 220px;
-        background-color: var(--content-bg);
-        border-right: 1px solid var(--border-color);
-        padding: 20px 0;
-    }
-    .sidebar-menu { list-style: none; padding: 0; margin: 0; }
-    .sidebar-item a {
-        display: block;
-        padding: 15px 25px;
-        text-decoration: none;
-        color: var(--text-dark);
-        font-weight: bold;
-    }
-    .sidebar-item.active a {
-        background-color: var(--base-bg);
-        color: var(--accent-blue);
-        border-right: 4px solid var(--accent-blue);
-    }
+            <!-- 新規商品登録フォーム -->
+            <section class="card mb-4">
+                <div class="card-header fw-bold">新規商品登録</div>
+                <div class="card-body">
+                    <form action="/admin/products/store.php" method="post">
+                        <div class="row g-3 align-items-end">
 
-    /* メインコンテンツ */
-    .main-content { flex: 1; padding: 30px; }
-    .page-title { font-size: 1.25rem; margin-bottom: 25px; font-weight: bold; }
+                            <div class="col-md-3">
+                                <label class="form-label">商品名</label>
+                                <input type="text" name="name" class="form-control" required>
+                            </div>
 
-    /* パネル */
-    .panel {
-        background-color: var(--content-bg);
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        padding: 25px;
-        margin-bottom: 30px;
-    }
-    .panel-header {
-        font-size: 1rem;
-        font-weight: bold;
-        margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 1px solid var(--base-bg);
-    }
+                            <div class="col-md-2">
+                                <label class="form-label">価格（円）</label>
+                                <input type="number" name="price" class="form-control" min="0" required>
+                            </div>
 
-    /* フォーム */
-    .form-row { display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-end; }
-    .form-group { display: flex; flex-direction: column; gap: 8px; }
-    .form-label { font-size: 0.85rem; font-weight: bold; }
-    .form-control {
-        height: 40px;
-        padding: 0 12px;
-        border: 1px solid var(--border-color);
-        border-radius: 6px;
-    }
+                            <div class="col-md-3">
+                                <label class="form-label">カテゴリ</label>
+                                <select name="category_id" class="form-select" required>
+                                    <option value="">選択してください</option>
+                                    <?php foreach ($categories as $category): ?>
+                                        <option value="<?= htmlspecialchars($category['id']) ?>">
+                                            <?= htmlspecialchars($category['name']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
 
-    /* ボタン */
-    .btn { height: 40px; padding: 0 20px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
-    .btn-primary { background-color: var(--accent-blue); color: white; }
-    .btn-outline-danger {
-        background-color: transparent;
-        border: 1px solid var(--alert-red);
-        color: var(--alert-red);
-        height: 32px;
-        padding: 0 12px;
-    }
+                            <div class="col-md-2">
+                                <label class="form-label">TO区分</label>
+                                <select name="is_takeout" class="form-select">
+                                    <option value="0">店内</option>
+                                    <option value="1">テイクアウト</option>
+                                </select>
+                            </div>
 
-    /* テーブル */
-    .product-table { width: 100%; border-collapse: collapse; }
-    .product-table th { background-color: #F8F9FA; text-align: left; padding: 12px 15px; border-bottom: 2px solid var(--base-bg); }
-    .product-table td { padding: 15px; border-bottom: 1px solid var(--base-bg); }
-    
-    .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
-    .badge-instore { background-color: #E3F2FD; color: #1976D2; }
-    .badge-takeout { background-color: #F3E5F5; color: #7B1FA2; }
-</style>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    ＋ この内容で登録する
+                                </button>
+                            </div>
 
-<div class="admin-layout">
-    <nav class="sidebar">
-        <ul class="sidebar-menu">
-            <li class="sidebar-item"><a href="../index.php">売上管理</a></li>
-            <li class="sidebar-item active"><a href="index.php">商品設定</a></li>
-        </ul>
-    </nav>
-
-    <main class="main-content">
-        <h1 class="page-title">商品設定</h1>
-
-        <section class="panel">
-            <div class="panel-header">【新規商品登録】</div>
-            <form action="store.php" method="POST">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">商品名</label>
-                        <input type="text" name="name" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">価格 (税抜)</label>
-                        <input type="number" name="price" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">カテゴリ</label>
-                        <select name="category_id" class="form-control" required>
-                            <option value="">選択してください</option>
-                            <?php foreach($categories as $cat): ?>
-                                <option value="<?= htmlspecialchars($cat['id']) ?>"><?= htmlspecialchars($cat['name']) ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">税率/区分設定</label>
-                        <div style="height: 40px; display: flex; align-items: center; gap: 15px;">
-                            <label><input type="radio" name="is_takeout" value="0" checked> 店内のみ (10%)</label>
-                            <label><input type="radio" name="is_takeout" value="1"> TOのみ (8%)</label>
                         </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary">+ 登録</button>
+                    </form>
                 </div>
-            </form>
-        </section>
+            </section>
 
-        <section class="panel">
-            <div class="panel-header">【登録済み商品一覧】</div>
-            <table class="product-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>商品名</th>
-                        <th>価格</th>
-                        <th>カテゴリ</th>
-                        <th>区分</th>
-                        <th>操作</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach($products as $p): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($p['id']) ?></td>
-                        <td><strong><?= htmlspecialchars($p['name']) ?></strong></td>
-                        <td>¥<?= htmlspecialchars(number_format($p['price'])) ?></td>
-                        <td><?= htmlspecialchars($p['category']) ?></td>
-                        <td>
-                            <?php if($p['is_takeout']): ?>
-                                <span class="badge badge-takeout">TOのみ</span>
-                            <?php else: ?>
-                                <span class="badge badge-instore">店内のみ</span>
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <form action="delete.php" method="POST" onsubmit="return confirm('削除しますか？');">
-                                <input type="hidden" name="id" value="<?= htmlspecialchars($p['id']) ?>">
-                                <button type="submit" class="btn btn-outline-danger">削除</button>
-                            </form>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
-        </section>
-    </main>
+            <!-- 登録済み商品一覧 -->
+            <section class="card">
+                <div class="card-header fw-bold">登録済み商品一覧</div>
+                <div class="card-body">
+
+                    <!-- 絞り込みフォーム -->
+                    <form method="get" action="/admin/products/index.php" class="row g-2 mb-3">
+                        <div class="col-md-3">
+                            <select name="category_id" class="form-select">
+                                <option value="">すべてのカテゴリ</option>
+                                <?php foreach ($categories as $category): ?>
+                                    <option value="<?= htmlspecialchars($category['id']) ?>"
+                                        <?= (isset($_GET['category_id']) && $_GET['category_id'] == $category['id']) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($category['name']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" name="keyword" class="form-control"
+                                placeholder="商品名を入力..."
+                                value="<?= htmlspecialchars($_GET['keyword'] ?? '') ?>">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-secondary w-100">検索</button>
+                        </div>
+                    </form>
+
+                    <!-- 商品テーブル -->
+                    <?php if (empty($products)): ?>
+                        <p class="text-muted">該当する商品がありません。</p>
+                    <?php else: ?>
+                        <table class="table table-striped table-hover">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>商品名</th>
+                                    <th>価格</th>
+                                    <th>カテゴリ</th>
+                                    <th>区分</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($products as $product): ?>
+                                    <tr>
+                                        <td><?= htmlspecialchars($product['id']) ?></td>
+                                        <td><?= htmlspecialchars($product['name']) ?></td>
+                                        <td>¥<?= number_format($product['price']) ?></td>
+                                        <td><?= htmlspecialchars($product['category_name']) ?></td>
+                                        <td><?= $product['is_takeout'] ? 'テイクアウト' : '店内' ?></td>
+                                        <td>
+                                            <form action="/admin/products/delete.php" method="post"
+                                                onsubmit="return confirm('本当に削除しますか？')">
+                                                <input type="hidden" name="id" value="<?= htmlspecialchars($product['id']) ?>">
+                                                <button type="submit" class="btn btn-outline-danger btn-sm">削除</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
+
+                </div>
+            </section>
+
+        </main>
+    </div>
 </div>
 
-<?php include __DIR__ . '/../layout/footer.php'; ?>
+<?php require_once __DIR__ . '/../layout/footer.php'; ?>

@@ -8,8 +8,8 @@ if (empty($_SESSION['user_id']) || empty($_SESSION['is_admin'])) {
     exit;
 }
 
-require_once __DIR__ . '/../../../src/Database.php';
-require_once __DIR__ . '/../../../src/Product.php';
+require_once __DIR__ . '/../../src/Database.php';
+require_once __DIR__ . '/../../src/Product.php';
 
 $db      = new Database();
 $product = new Product($db);
