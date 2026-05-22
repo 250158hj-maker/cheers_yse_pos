@@ -40,6 +40,7 @@ try {
         id INT AUTO_INCREMENT PRIMARY KEY,
         sale_id INT NOT NULL,
         product_id INT NOT NULL,
+        product_name VARCHAR(255) NOT NULL,
         unit_price INT NOT NULL,
         quantity INT NOT NULL,
         FOREIGN KEY (sale_id) REFERENCES sales(id) ON DELETE CASCADE,
