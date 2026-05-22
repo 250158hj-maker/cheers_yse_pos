@@ -4,6 +4,14 @@
  * 売上管理画面（一覧・フィルタリング）
  */
 
+// 変数の未定義エラー防止用の初期化
+$summary = $summary ?? ['total_amount' => 0, 'count' => 0];
+$sales = $sales ?? [];
+$filters = $filters ?? ['store_id' => '', 'category_id' => '', 'date_from' => '', 'date_to' => '', 'receipt_no' => ''];
+$stores = $stores ?? [];
+$categories = $categories ?? [];
+$pageTitle = $pageTitle ?? '売上管理';
+
 require_once __DIR__ . '/../layout/header.php';
 ?>
 
@@ -122,3 +130,4 @@ require_once __DIR__ . '/../layout/header.php';
 </div>
 
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
+
