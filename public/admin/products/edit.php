@@ -12,7 +12,8 @@ if (!$id) {
     exit;
 }
 
-$productModel = new Product();
+$db = new Database();
+$productModel = new Product($db);
 $product = $productModel->getById($id);
 
 if (!$product) {

@@ -17,8 +17,8 @@ Auth::requireAdmin();
 $pageTitle = '売上管理';
 $user = Auth::user();
 
-$saleModel = new Sale();
 $db = new Database();
+$saleModel = new Sale($db);
 
 // 1. フィルタ条件の取得（GETパラメータから）
 $filters = [

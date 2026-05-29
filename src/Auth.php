@@ -9,13 +9,13 @@ require_once __DIR__ . '/Database.php';
 class Auth {
     /**
      * ログイン処理
+     * @param Database $db
      * @param string $loginId
      * @param string $password
      * @return array|false 成功時はユーザー情報を、失敗時は false を返す
      */
-    public static function login($loginId, $password) {
+    public static function login(Database $db, $loginId, $password) {
         try {
-            $db = new Database();
             $sql = "SELECT * FROM users WHERE login_id = :login_id";
             $user = $db->fetchOne($sql, ['login_id' => $loginId]);
 

@@ -33,7 +33,9 @@ if (empty($loginId) || empty($password)) {
 }
 
 try {
-    $user = Auth::login($loginId, $password);
+    require_once __DIR__ . '/../src/Database.php';
+    $db = new Database();
+    $user = Auth::login($db, $loginId, $password);
 
     if ($user) {
         if (isset($user['is_admin']) && $user['is_admin'] == 1) {

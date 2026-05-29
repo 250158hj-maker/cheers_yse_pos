@@ -10,12 +10,12 @@ class Product
     private Database $db;
 
     /**
-     * コンストラクタ。外部から Database を注入可能。
-     * @param Database|null $db
+     * コンストラクタ。外部から Database インスタンスを注入する。
+     * @param Database $db
      */
-    public function __construct(?Database $db = null)
+    public function __construct(Database $db)
     {
-        $this->db = $db ?? new Database();
+        $this->db = $db;
     }
 
     /**

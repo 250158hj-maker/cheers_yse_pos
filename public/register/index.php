@@ -17,7 +17,9 @@ $pageTitle = 'レジ操作';
 $user = Auth::user();
 
 // 商品データ・カテゴリデータの取得
-$productModel = new Product();
+require_once __DIR__ . '/../../src/Database.php';
+$db = new Database();
+$productModel = new Product($db);
 $categories = $productModel->getAllCategories();
 $products = $productModel->getAll();
 

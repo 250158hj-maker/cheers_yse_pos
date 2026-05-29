@@ -18,8 +18,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($id) {
         try {
-            $product = new Product();
-            $product->delete((int)$id);
+            require_once __DIR__ . '/../../../src/Database.php';
+            $db = new Database();
+            $productModel = new Product($db);
+            $productModel->delete((int)$id);
             header('Location: index.php');
             exit;
         } catch (PDOException $e) {

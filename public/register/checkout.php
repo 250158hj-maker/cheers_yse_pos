@@ -31,7 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $sale = new Sale();
+    require_once __DIR__ . '/../../src/Database.php';
+    $db = new Database();
+    $sale = new Sale($db);
     $user = Auth::user();
     
     // DBに保存
