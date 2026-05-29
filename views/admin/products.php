@@ -3,26 +3,15 @@
 <div class="container-fluid">
     <div class="row">
 
-        <!-- 左サイドバー -->
-        <nav class="col-md-2 bg-light min-vh-100 p-3">
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link" href="/admin/index.php">売上管理</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active fw-bold" href="/admin/products/index.php">商品設定</a>
-                </li>
-            </ul>
-        </nav>
-
         <!-- 右メインエリア  -->
-        <main class="col-md-10 p-4">
+        <main class="col-md-12 p-4">
 
             <!-- 新規商品登録フォーム -->
             <section class="card mb-4">
                 <div class="card-header fw-bold">新規商品登録</div>
                 <div class="card-body">
-                    <form action="/admin/products/store.php" method="post">
+                    <form action="<?= $baseUrl ?>admin/products/store.php" method="post">
+                        <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
                         <div class="row g-3 align-items-end">
 
                             <div class="col-md-3">
@@ -57,7 +46,7 @@
 
                             <div class="col-md-2">
                                 <button type="submit" class="btn btn-primary w-100">
-                                    ＋ この内容で登録する
+                                    商品を登録する
                                 </button>
                             </div>
 
@@ -72,7 +61,7 @@
                 <div class="card-body">
 
                     <!-- 絞り込みフォーム -->
-                    <form method="get" action="/admin/products/index.php" class="row g-2 mb-3">
+                    <form method="get" action="<?= $baseUrl ?>admin/products/index.php" class="row g-2 mb-3">
                         <div class="col-md-3">
                             <select name="category_id" class="form-select">
                                 <option value="">すべてのカテゴリ</option>
@@ -118,8 +107,9 @@
                                         <td><?= htmlspecialchars($product['category_name']) ?></td>
                                         <td><?= $product['is_takeout'] ? 'テイクアウト' : '店内' ?></td>
                                         <td>
-                                            <form action="/admin/products/delete.php" method="post"
+                                            <form action="<?= $baseUrl ?>admin/products/delete.php" method="post"
                                                 onsubmit="return confirm('本当に削除しますか？')">
+                                                <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
                                                 <input type="hidden" name="id" value="<?= htmlspecialchars($product['id']) ?>">
                                                 <button type="submit" class="btn btn-outline-danger btn-sm">削除</button>
                                             </form>
