@@ -21,14 +21,8 @@ $isLoggedIn = !empty($user);
 $isAdmin = $user['is_admin'] ?? false;
 $userName = $isLoggedIn ? htmlspecialchars($user['name'] ?? 'スタッフ') : '';
 
-// 4. ベースURLの計算 (サブディレクトリ環境対応)
-$scriptName = $_SERVER['SCRIPT_NAME'];
-$publicPos = strpos($scriptName, '/public/');
-if ($publicPos !== false) {
-    $baseUrl = substr($scriptName, 0, $publicPos + 8);
-} else {
-    $baseUrl = '/';
-}
+// 4. ベースURLの取得
+$baseUrl = BASE_URL;
 
 // 5. ナビゲーションメニューの生成
 $navItems = [];

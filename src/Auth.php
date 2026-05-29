@@ -66,8 +66,7 @@ class Auth {
      */
     public static function requireLogin() {
         if (!self::isLoggedIn()) {
-            $baseUrl = self::getBaseUrl();
-            header('Location: ' . $baseUrl . 'index.php');
+            header('Location: ' . BASE_URL . 'index.php');
             exit;
         }
     }
@@ -80,22 +79,9 @@ class Auth {
         self::requireLogin();
         $user = self::user();
         if (!($user['is_admin'] ?? false)) {
-            $baseUrl = self::getBaseUrl();
-            header('Location: ' . $baseUrl . 'index.php');
+            header('Location: ' . BASE_URL . 'index.php');
             exit;
         }
-    }
-
-    /**
-     * ベースURLを計算 (サブディレクトリ環境対応)
-     */
-    private static function getBaseUrl() {
-        $scriptName = $_SERVER['SCRIPT_NAME'];
-        $publicPos = strpos($scriptName, '/public/');
-        if ($publicPos !== false) {
-            return substr($scriptName, 0, $publicPos + 8);
-        }
-        return '/';
     }
 
     /**
