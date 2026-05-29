@@ -107,12 +107,16 @@
                                         <td><?= htmlspecialchars($product['category_name']) ?></td>
                                         <td><?= $product['is_takeout'] ? 'テイクアウト' : '店内' ?></td>
                                         <td>
-                                            <form action="<?= $baseUrl ?>admin/products/delete.php" method="post"
-                                                onsubmit="return confirm('本当に削除しますか？')">
-                                                <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
-                                                <input type="hidden" name="id" value="<?= htmlspecialchars($product['id']) ?>">
-                                                <button type="submit" class="btn btn-outline-danger btn-sm">削除</button>
-                                            </form>
+                                            <div class="d-flex gap-1">
+                                                <a href="<?= $baseUrl ?>admin/products/edit.php?id=<?= $product['id'] ?>" 
+                                                   class="btn btn-outline-primary btn-sm">編集</a>
+                                                <form action="<?= $baseUrl ?>admin/products/delete.php" method="post"
+                                                    onsubmit="return confirm('本当に削除しますか？')">
+                                                    <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+                                                    <input type="hidden" name="id" value="<?= htmlspecialchars($product['id']) ?>">
+                                                    <button type="submit" class="btn btn-outline-danger btn-sm">削除</button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>

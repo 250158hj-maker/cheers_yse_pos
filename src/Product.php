@@ -3,18 +3,14 @@ require_once __DIR__ . '/Database.php';
 
 /**
  * 商品（Product）データ操作クラス。
- * データベースへのアクセスは Database クラスを介して行う。
- * 商品情報の取得、登録、更新、削除のビジネスロジックを担う。
+ * Database ラッパー経由で DB 操作を行う。
  */
 class Product
 {
     private Database $db;
 
     /**
-     * コンストラクタ。
-     * Database インスタンスが渡されない場合は内部で新規生成する。
-     * これにより、他のクラス（Sale等）と整合性を取りつつ、既存の依存注入にも対応する。
-     *
+     * コンストラクタ。外部から Database を注入可能。
      * @param Database|null $db
      */
     public function __construct(?Database $db = null)
@@ -24,8 +20,6 @@ class Product
 
     /**
      * カテゴリ一覧を取得する。
-     * フォームのプルダウンや絞り込みUIで使用する。
-     *
      * @return array
      */
     public function getAllCategories(): array
@@ -35,10 +29,9 @@ class Product
 
     /**
      * 商品一覧を取得する。
-     * 引数によりカテゴリIDやキーワード（商品名の部分一致）で絞り込みが可能。
-     *
-     * @param int|null    $categoryId カテゴリID（nullなら絞り込みなし）
-     * @param string|null $keyword    キーワード（nullなら絞り込みなし）
+     * カテゴリやキーワードでの絞り込みが可能。
+     * @param int|null $categoryId
+     * @param string|null $keyword
      * @return array
      */
     public function getAll(?int $categoryId = null, ?string $keyword = null): array
@@ -78,10 +71,19 @@ class Product
     }
 
     /**
+     * カテゴリIDを指定して商品一覧を取得する（互換ラッパー）
+     * @param int $categoryId
+     * @return array
+     */
+    public function getByCategory(int $categoryId): array
+    {
+        return $this->getAll($categoryId, null);
+    }
+
+    /**
      * ID指定で商品情報を1件取得する。
-     *
-     * @param int $id 商品ID
-     * @return array|null 商品情報（見つからない場合はnull）
+     * @param int $id
+     * @return array|null
      */
     public function getById(int $id): ?array
     {
@@ -98,9 +100,8 @@ class Product
 
     /**
      * 商品を新規登録する。
-     *
-     * @param array $data ['name', 'price', 'category_id', 'is_takeout']
-     * @return int 新規登録された商品のID
+     * @param array $data
+     * @return int
      */
     public function store(array $data): int
     {
@@ -119,10 +120,9 @@ class Product
 
     /**
      * 商品情報を更新する。
-     *
-     * @param int   $id   商品ID
-     * @param array $data ['name', 'price', 'category_id', 'is_takeout']
-     * @return bool 成功したかどうか
+     * @param int $id
+     * @param array $data
+     * @return bool
      */
     public function update(int $id, array $data): bool
     {
@@ -138,16 +138,13 @@ class Product
             'category_id' => $data['category_id'],
             'is_takeout'  => ($data['is_takeout'] ?? false) ? 1 : 0
         ]);
-        // 1行以上更新されたか、あるいはエラーがなければ成功とする
-        // PDOStatement::rowCount() は変更がない場合に0を返すことがあるため注意
         return $rowCount >= 0;
     }
 
     /**
      * 商品を削除する。
-     *
-     * @param int $id 商品ID
-     * @return bool 削除に成功したか（影響行数が1以上か）
+     * @param int $id
+     * @return bool
      */
     public function delete(int $id): bool
     {
