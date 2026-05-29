@@ -61,7 +61,7 @@ class Sale
 
             // 1. sales テーブルへ挿入
             $receiptNo = date('Ymd-His-') . sprintf('%04d', rand(0, 9999));
-            $taxRate = 0.10; // 固定（必要に応じてTO区分で8%にする等のロジックを追加）
+            $taxRate = TAX_RATE_NORMAL; // 定数を使用（将来的に商品ごとに可変にする土台）
 
             $sqlSale = "INSERT INTO sales (store_id, receipt_no, total_amount, tax_rate, sold_at) 
                         VALUES (:store_id, :receipt_no, :total_amount, :tax_rate, NOW())";

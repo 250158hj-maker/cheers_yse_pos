@@ -223,6 +223,13 @@
 <?php endif; ?>
 
 <!-- レジ画面専用JavaScript -->
+<script>
+    // PHPの定数をJavaScriptへ渡す
+    window.TAX_CONFIG = {
+        NORMAL: <?= TAX_RATE_NORMAL ?>,
+        REDUCED: <?= TAX_RATE_REDUCED ?>
+    };
+</script>
 <script src="../js/register.js"></script>
 
 <?php require_once __DIR__ . '/layout/footer.php'; ?>

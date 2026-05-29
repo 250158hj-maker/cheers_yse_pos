@@ -22,7 +22,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // 状態管理
     let currentOrder = [];
     let calcInput = '0';
-    let lastAppliedTaxRate = 1.10; // 最後に適用した税率（新規追加用）
+    // PHPから渡された定数を使用、なければデフォルト値を設定
+    const TAX_NORMAL = window.TAX_CONFIG ? (1 + window.TAX_CONFIG.NORMAL) : 1.10;
+    const TAX_REDUCED = window.TAX_CONFIG ? (1 + window.TAX_CONFIG.REDUCED) : 1.08;
+    
+    let lastAppliedTaxRate = TAX_NORMAL; // 最後に適用した税率（新規追加用）
 
     // --- 1. カテゴリ切り替え ---
     categoryTabs.forEach(tab => {
@@ -78,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 case 'ac': // 全リセット
                     currentOrder = [];
                     calcInput = '0';
-                    lastAppliedTaxRate = 1.10;
+                    lastAppliedTaxRate = TAX_NORMAL;
                     renderOrder();
                     updateCalcDisplay();
                     updateChange();
@@ -89,10 +93,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     updateChange();
                     break;
                 case 'tax8':
-                    applyTaxToOrder(1.08, currentVal);
+                    applyTaxToOrder(TAX_REDUCED, currentVal);
                     break;
                 case 'tax10':
-                    applyTaxToOrder(1.10, currentVal);
+                    applyTaxToOrder(TAX_NORMAL, currentVal);
                     break;
             }
         });
