@@ -17,11 +17,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = $_POST['id'] ?? null;
 
     if ($id) {
-        $product = new Product();
-        $product->delete((int)$id);
+        try {
+            $product = new Product();
+            $product->delete((int)$id);
+            header('Location: index.php');
+            exit;
+        } catch (PDOException $e) {
+            // 外部キー制約（売上実績がある場合）のエラーをキャッチ
+            if ($e->getCode() === '23000') {
+                if (session_status() === PHP_SESSION_NONE) session_start();
+                $_SESSION['error_message'] = "この商品は売上実績があるため削除できません。";
+                header('Location: index.php');
+                exit;
+            }
+            throw $e;
+        }
     }
 }
 
-// 商品一覧へリダイレクト
+// 通常のリダイレクト
 header('Location: index.php');
 exit;
