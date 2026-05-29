@@ -4,7 +4,7 @@
     <div class="row">
 
         <!-- 右メインエリア  -->
-        <main class="col-md-10 p-4">
+        <main class="col-md-12 p-4">
 
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="h4 mb-0">商品編集</h2>
