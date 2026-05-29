@@ -14,15 +14,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // バリデーション（簡易的）
+    // パラメータ取得
+    $id = $_POST['id'] ?? null;
     $name = $_POST['name'] ?? '';
     $price = $_POST['price'] ?? 0;
     $categoryId = $_POST['category_id'] ?? null;
     $isTakeout = $_POST['is_takeout'] ?? 0;
 
-    if (!empty($name) && $price >= 0 && !empty($categoryId)) {
+    if ($id && !empty($name) && $price >= 0 && !empty($categoryId)) {
         $product = new Product();
-        $product->store([
+        $product->update((int)$id, [
             'name'        => $name,
             'price'       => (int)$price,
             'category_id' => (int)$categoryId,

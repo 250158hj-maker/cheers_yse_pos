@@ -1,50 +1,154 @@
 <?php
-/**
- * src/Product.php
- * 商品データ操作クラス
- */
-
 require_once __DIR__ . '/Database.php';
 
+/**
+ * 商品（Product）データ操作クラス。
+ * Database ラッパー経由で DB 操作を行う。
+ */
 class Product
 {
     private Database $db;
 
-    public function __construct()
+    /**
+     * コンストラクタ。外部から Database を注入可能。
+     * @param Database|null $db
+     */
+    public function __construct(?Database $db = null)
     {
-        $this->db = new Database();
+        $this->db = $db ?? new Database();
     }
 
     /**
-     * 全カテゴリを取得する
-     * レジ画面のカテゴリ切替ボタン生成に使用
+     * カテゴリ一覧を取得する。
+     * @return array
      */
     public function getAllCategories(): array
     {
-        $sql = "SELECT id, name FROM categories ORDER BY id ASC";
-        return $this->db->fetchAll($sql);
+        return $this->db->fetchAll("SELECT id, name FROM categories ORDER BY id");
     }
 
     /**
-     * 全商品を取得する
-     * レジ画面の「すべて」タブ用
+     * 商品一覧を取得する。
+     * カテゴリやキーワードでの絞り込みが可能。
+     * @param int|null $categoryId
+     * @param string|null $keyword
+     * @return array
      */
-    public function getAll(): array
+    public function getAll(?int $categoryId = null, ?string $keyword = null): array
     {
-        $sql = "SELECT id, category_id, name, price, is_takeout FROM products ORDER BY id ASC";
-        return $this->db->fetchAll($sql);
+        $sql = "
+            SELECT
+                p.id,
+                p.name,
+                p.price,
+                p.is_takeout,
+                c.id   AS category_id,
+                c.name AS category_name
+            FROM products p
+            JOIN categories c ON p.category_id = c.id
+        ";
+
+        $params = [];
+        $conditions = [];
+
+        if ($categoryId !== null) {
+            $conditions[] = "p.category_id = :category_id";
+            $params['category_id'] = $categoryId;
+        }
+
+        if ($keyword !== null && $keyword !== '') {
+            $conditions[] = "p.name LIKE :keyword";
+            $params['keyword'] = "%{$keyword}%";
+        }
+
+        if (!empty($conditions)) {
+            $sql .= " WHERE " . implode(" AND ", $conditions);
+        }
+
+        $sql .= " ORDER BY c.id, p.id";
+
+        return $this->db->fetchAll($sql, $params);
     }
 
     /**
-     * カテゴリIDを指定して商品一覧を取得する
-     * レジ画面の商品ボタン生成に使用
+     * カテゴリIDを指定して商品一覧を取得する（互換ラッパー）
+     * @param int $categoryId
+     * @return array
      */
     public function getByCategory(int $categoryId): array
     {
-        $sql = "SELECT id, category_id, name, price, is_takeout 
-                FROM products 
-                WHERE category_id = :category_id 
-                ORDER BY id ASC";
-        return $this->db->fetchAll($sql, ['category_id' => $categoryId]);
+        return $this->getAll($categoryId, null);
+    }
+
+    /**
+     * ID指定で商品情報を1件取得する。
+     * @param int $id
+     * @return array|null
+     */
+    public function getById(int $id): ?array
+    {
+        $sql = "
+            SELECT
+                p.*,
+                c.name AS category_name
+            FROM products p
+            JOIN categories c ON p.category_id = c.id
+            WHERE p.id = :id
+        ";
+        return $this->db->fetchOne($sql, ['id' => $id]);
+    }
+
+    /**
+     * 商品を新規登録する。
+     * @param array $data
+     * @return int
+     */
+    public function store(array $data): int
+    {
+        $sql = "
+            INSERT INTO products (name, price, category_id, is_takeout)
+            VALUES (:name, :price, :category_id, :is_takeout)
+        ";
+        $this->db->execute($sql, [
+            'name'        => $data['name'],
+            'price'       => $data['price'],
+            'category_id' => $data['category_id'],
+            'is_takeout'  => ($data['is_takeout'] ?? false) ? 1 : 0
+        ]);
+        return (int)$this->db->lastInsertId();
+    }
+
+    /**
+     * 商品情報を更新する。
+     * @param int $id
+     * @param array $data
+     * @return bool
+     */
+    public function update(int $id, array $data): bool
+    {
+        $sql = "
+            UPDATE products
+            SET name = :name, price = :price, category_id = :category_id, is_takeout = :is_takeout
+            WHERE id = :id
+        ";
+        $rowCount = $this->db->execute($sql, [
+            'id'          => $id,
+            'name'        => $data['name'],
+            'price'       => $data['price'],
+            'category_id' => $data['category_id'],
+            'is_takeout'  => ($data['is_takeout'] ?? false) ? 1 : 0
+        ]);
+        return $rowCount >= 0;
+    }
+
+    /**
+     * 商品を削除する。
+     * @param int $id
+     * @return bool
+     */
+    public function delete(int $id): bool
+    {
+        $sql = "DELETE FROM products WHERE id = :id";
+        return $this->db->execute($sql, ['id' => $id]) > 0;
     }
 }

@@ -14,6 +14,13 @@ Auth::requireLogin();
  * --- 処理部 (Processing) ---
  */
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // CSRFトークンの検証
+    $token = $_POST['csrf_token'] ?? '';
+    if (!Auth::validateCsrfToken($token)) {
+        header('Location: index.php?error=csrf_error');
+        exit;
+    }
+
     // 注文データ（JSON）を取得
     $json = $_POST['order_data'] ?? '';
     $data = json_decode($json, true);
@@ -31,8 +38,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $success = $sale->create($user['id'], $data);
 
     if ($success) {
-        // 成功時：レジ画面へ戻る
-        header('Location: index.php?success=1');
+        // 成功時：お釣り額をセッションに保存してレジ画面へ戻る
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        $_SESSION['checkout_success'] = true;
+        $_SESSION['last_change'] = $data['change_amount'] ?? 0;
+        
+        header('Location: index.php');
         exit;
     } else {
         // 失敗時：エラーメッセージを持って戻る
