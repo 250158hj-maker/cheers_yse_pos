@@ -6,29 +6,20 @@
 
 require_once __DIR__ . '/../src/Auth.php';
 
-// セッション開始
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
 // 1. POSTメソッド以外は受け付けない
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: ' . BASE_URL . 'index.php');
-    exit;
+    Auth::redirect('index.php');
 }
 
 // 2. CSRFトークンの検証
 $csrfToken = $_POST['csrf_token'] ?? '';
 if (!Auth::validateCsrfToken($csrfToken)) {
     error_log("Logout Failed: Invalid CSRF Token");
-    header('Location: ' . BASE_URL . 'index.php');
-    exit;
+    Auth::redirect('index.php');
 }
 
 // 3. ログアウト処理の実行
 Auth::logout();
-error_log("Logout Success: Session cleared. Redirecting to " . BASE_URL . "index.php");
 
 // 4. ログイン画面へリダイレクト
-header('Location: ' . BASE_URL . 'index.php');
-exit;
+Auth::redirect('index.php');

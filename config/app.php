@@ -2,6 +2,11 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+// セッションの開始（全ページ共通）
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 
