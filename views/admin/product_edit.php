@@ -18,7 +18,7 @@
                 <div class="card-header fw-bold">商品情報の変更</div>
                 <div class="card-body">
                     <form action="<?= $baseUrl ?>admin/products/update.php" method="post">
-                        <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+                        <?= csrf_field() ?>
                         <input type="hidden" name="id" value="<?= htmlspecialchars($product['id']) ?>">
 
                         <div class="row g-3 mb-3">

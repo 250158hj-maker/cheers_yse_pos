@@ -31,3 +31,23 @@ function h(?string $str): string
 {
     return htmlspecialchars($str ?? '', ENT_QUOTES, 'UTF-8');
 }
+
+/**
+ * CSRFトークンの隠しフィールドを生成
+ */
+function csrf_field(): string
+{
+    $token = $_SESSION['csrf_token'] ?? '';
+    return '<input type="hidden" name="csrf_token" value="' . h($token) . '">';
+}
+
+/**
+ * JSONレスポンスを返却
+ */
+function json(array $data, int $status = 200): void
+{
+    header('Content-Type: application/json; charset=UTF-8');
+    http_response_code($status);
+    echo json_encode($data);
+    exit;
+}

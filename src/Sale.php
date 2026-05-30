@@ -57,41 +57,39 @@ class Sale
     public function create(int $storeId, array $data): bool
     {
         try {
-            $this->db->beginTransaction();
+            return $this->db->transaction(function(Database $db) use ($storeId, $data) {
+                // 1. sales テーブルへ挿入
+                $receiptNo = date('Ymd-His-') . sprintf('%04d', rand(0, 9999));
+                $taxRate = TAX_RATE_NORMAL;
 
-            // 1. sales テーブルへ挿入
-            $receiptNo = date('Ymd-His-') . sprintf('%04d', rand(0, 9999));
-            $taxRate = TAX_RATE_NORMAL; // 定数を使用（将来的に商品ごとに可変にする土台）
-
-            $sqlSale = "INSERT INTO sales (store_id, receipt_no, total_amount, tax_rate, sold_at) 
-                        VALUES (:store_id, :receipt_no, :total_amount, :tax_rate, NOW())";
-            
-            $saleId = $this->db->insert($sqlSale, [
-                'store_id' => $storeId,
-                'receipt_no' => $receiptNo,
-                'total_amount' => $data['total_amount'],
-                'tax_rate' => $taxRate
-            ]);
-
-            // 2. sale_items テーブルへ挿入
-            $sqlItem = "INSERT INTO sale_items (sale_id, product_id, product_name, unit_price, quantity) 
-                        VALUES (:sale_id, :product_id, :product_name, :unit_price, :quantity)";
-            
-            foreach ($data['items'] as $item) {
-                $this->db->execute($sqlItem, [
-                    'sale_id' => $saleId,
-                    'product_id' => $item['id'],
-                    'product_name' => $item['name'],
-                    'unit_price' => $item['price'],
-                    'quantity' => $item['quantity']
+                $sqlSale = "INSERT INTO sales (store_id, receipt_no, total_amount, tax_rate, sold_at) 
+                            VALUES (:store_id, :receipt_no, :total_amount, :tax_rate, NOW())";
+                
+                $saleId = $db->insert($sqlSale, [
+                    'store_id' => $storeId,
+                    'receipt_no' => $receiptNo,
+                    'total_amount' => $data['total_amount'],
+                    'tax_rate' => $taxRate
                 ]);
-            }
 
-            $this->db->commit();
-            return true;
-        } catch (Exception $e) {
-            $this->db->rollBack();
-            error_log($e->getMessage());
+                // 2. sale_items テーブルへ挿入
+                $sqlItem = "INSERT INTO sale_items (sale_id, product_id, product_name, unit_price, quantity) 
+                            VALUES (:sale_id, :product_id, :product_name, :unit_price, :quantity)";
+                
+                foreach ($data['items'] as $item) {
+                    $db->execute($sqlItem, [
+                        'sale_id' => $saleId,
+                        'product_id' => $item['id'],
+                        'product_name' => $item['name'],
+                        'unit_price' => $item['price'],
+                        'quantity' => $item['quantity']
+                    ]);
+                }
+
+                return true;
+            });
+        } catch (Throwable $e) {
+            error_log("Sale::create error: " . $e->getMessage());
             return false;
         }
     }

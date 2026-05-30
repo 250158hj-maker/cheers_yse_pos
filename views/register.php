@@ -143,7 +143,7 @@
                             <span class="h5 text-danger mb-0" id="change-amount">¥ 0</span>
                         </div>
                         <form id="checkout-form" action="checkout.php" method="POST">
-                            <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+                            <?= csrf_field() ?>
                             <input type="hidden" name="order_data" id="order-data-input">
                             <button type="button" class="btn btn-success btn-lg w-100" id="checkout-btn">計上 (F10)</button>
                         </form>

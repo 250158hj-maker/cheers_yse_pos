@@ -11,7 +11,7 @@
                 <div class="card-header fw-bold">新規商品登録</div>
                 <div class="card-body">
                     <form action="<?= $baseUrl ?>admin/products/store.php" method="post">
-                        <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+                        <?= csrf_field() ?>
                         <div class="row g-3 align-items-end">
 
                             <div class="col-md-3">
@@ -112,7 +112,7 @@
                                                    class="btn btn-outline-primary btn-sm">編集</a>
                                                 <form action="<?= $baseUrl ?>admin/products/delete.php" method="post"
                                                     onsubmit="return confirm('本当に削除しますか？')">
-                                                    <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+                                                    <?= csrf_field() ?>
                                                     <input type="hidden" name="id" value="<?= h($product['id']) ?>">
                                                     <button type="submit" class="btn btn-outline-danger btn-sm">削除</button>
                                                 </form>

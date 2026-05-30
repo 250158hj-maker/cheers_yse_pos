@@ -70,7 +70,7 @@ $csrfToken = Auth::generateCsrfToken();
                             ログイン中: <strong><?= $userName ?></strong>
                         </span>
                         <form action="<?= $logoutUrl ?>" method="POST" class="m-0">
-                            <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+                            <?= csrf_field() ?>
                             <button type="submit" class="btn btn-outline-danger btn-sm">ログアウト</button>
                         </form>
                     </div>

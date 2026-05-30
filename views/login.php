@@ -44,7 +44,7 @@ $csrfToken = Auth::generateCsrfToken();
 
                 <form action="./login.php" method="POST">
                     <!-- CSRFトークン -->
-                    <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+                    <?= csrf_field() ?>
                     
                     <div class="mb-4">
                         <label for="login_id" class="form-label fw-bold">店舗ID または 管理者ID</label>
