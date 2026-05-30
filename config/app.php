@@ -23,3 +23,11 @@ define('BASE_URL', $baseUrl);
 // 消費税率の設定
 define('TAX_RATE_NORMAL', 0.10);  // 10%
 define('TAX_RATE_REDUCED', 0.08); // 8%
+
+/**
+ * HTMLエスケープの短縮関数
+ */
+function h(?string $str): string
+{
+    return htmlspecialchars($str ?? '', ENT_QUOTES, 'UTF-8');
+}

@@ -48,7 +48,16 @@ class Database
     }
 
     /**
-     * 直近INSERTの自動採番ID。sales挿入後に sale_items を紐付ける用途。
+     * INSERT を実行し、新規発行されたIDを返す。
+     */
+    public function insert(string $sql, array $params = []): string
+    {
+        $this->execute($sql, $params);
+        return $this->lastInsertId();
+    }
+
+    /**
+     * 直近INSERTの自動採番ID。
      */
     public function lastInsertId(): string
     {

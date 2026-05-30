@@ -8,18 +8,13 @@
 require_once __DIR__ . '/../../src/Auth.php';
 
 // 1. ページタイトルの設定
-$displayTitle = isset($pageTitle) ? htmlspecialchars($pageTitle) . " | Cheers YSE POS" : "Cheers YSE POS";
-
-// 2. セッション開始
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+$displayTitle = isset($pageTitle) ? h($pageTitle) . " | Cheers YSE POS" : "Cheers YSE POS";
 
 // 3. ユーザー情報の取得
 $user = $_SESSION['user'] ?? null;
 $isLoggedIn = !empty($user);
 $isAdmin = $user['is_admin'] ?? false;
-$userName = $isLoggedIn ? htmlspecialchars($user['name'] ?? 'スタッフ') : '';
+$userName = $isLoggedIn ? h($user['name'] ?? 'スタッフ') : '';
 
 // 4. ベースURLの取得
 $baseUrl = BASE_URL;
@@ -46,7 +41,7 @@ $csrfToken = Auth::generateCsrfToken();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title><?php echo $displayTitle; ?></title>
+    <title><?= $displayTitle ?></title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -57,7 +52,7 @@ $csrfToken = Auth::generateCsrfToken();
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="<?php echo $baseUrl; ?>index.php">Cheers YSE POS</a>
+            <a class="navbar-brand fw-bold" href="<?= $baseUrl ?>index.php">Cheers YSE POS</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -65,17 +60,17 @@ $csrfToken = Auth::generateCsrfToken();
                 <ul class="navbar-nav me-auto">
                     <?php foreach ($navItems as $item): ?>
                         <li class="nav-item">
-                            <a class="nav-link" href="<?php echo $item['url']; ?>"><?php echo $item['label']; ?></a>
+                            <a class="nav-link" href="<?= $item['url'] ?>"><?= h($item['label']) ?></a>
                         </li>
                     <?php endforeach; ?>
                 </ul>
                 <?php if ($isLoggedIn): ?>
                     <div class="d-flex align-items-center">
                         <span class="navbar-text me-3 text-light">
-                            ログイン中: <strong><?php echo $userName; ?></strong>
+                            ログイン中: <strong><?= $userName ?></strong>
                         </span>
-                        <form action="<?php echo $logoutUrl; ?>" method="POST" class="m-0">
-                            <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
+                        <form action="<?= $logoutUrl ?>" method="POST" class="m-0">
+                            <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
                             <button type="submit" class="btn btn-outline-danger btn-sm">ログアウト</button>
                         </form>
                     </div>

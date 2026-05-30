@@ -43,7 +43,7 @@
                                     <?php foreach ($categories as $category): ?>
                                         <option value="<?= htmlspecialchars($category['id']) ?>"
                                             <?= $product['category_id'] == $category['id'] ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($category['name']) ?>
+                                            <?= h($category['name']) ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>

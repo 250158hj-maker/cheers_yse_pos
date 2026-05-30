@@ -29,8 +29,8 @@
                                 <select name="category_id" class="form-select" required>
                                     <option value="">選択してください</option>
                                     <?php foreach ($categories as $category): ?>
-                                        <option value="<?= htmlspecialchars($category['id']) ?>">
-                                            <?= htmlspecialchars($category['name']) ?>
+                                        <option value="<?= h($category['id']) ?>">
+                                            <?= h($category['name']) ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -66,9 +66,9 @@
                             <select name="category_id" class="form-select">
                                 <option value="">すべてのカテゴリ</option>
                                 <?php foreach ($categories as $category): ?>
-                                    <option value="<?= htmlspecialchars($category['id']) ?>"
+                                    <option value="<?= h($category['id']) ?>"
                                         <?= (isset($_GET['category_id']) && $_GET['category_id'] == $category['id']) ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($category['name']) ?>
+                                        <?= h($category['name']) ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -76,7 +76,7 @@
                         <div class="col-md-4">
                             <input type="text" name="keyword" class="form-control"
                                 placeholder="商品名を入力..."
-                                value="<?= htmlspecialchars($_GET['keyword'] ?? '') ?>">
+                                value="<?= h($_GET['keyword'] ?? '') ?>">
                         </div>
                         <div class="col-md-2">
                             <button type="submit" class="btn btn-secondary w-100">検索</button>
@@ -101,10 +101,10 @@
                             <tbody>
                                 <?php foreach ($products as $product): ?>
                                     <tr>
-                                        <td><?= htmlspecialchars($product['id']) ?></td>
-                                        <td><?= htmlspecialchars($product['name']) ?></td>
+                                        <td><?= h($product['id']) ?></td>
+                                        <td><?= h($product['name']) ?></td>
                                         <td>¥<?= number_format($product['price']) ?></td>
-                                        <td><?= htmlspecialchars($product['category_name']) ?></td>
+                                        <td><?= h($product['category_name']) ?></td>
                                         <td><?= $product['is_takeout'] ? 'テイクアウト' : '店内' ?></td>
                                         <td>
                                             <div class="d-flex gap-1">
@@ -113,7 +113,7 @@
                                                 <form action="<?= $baseUrl ?>admin/products/delete.php" method="post"
                                                     onsubmit="return confirm('本当に削除しますか？')">
                                                     <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
-                                                    <input type="hidden" name="id" value="<?= htmlspecialchars($product['id']) ?>">
+                                                    <input type="hidden" name="id" value="<?= h($product['id']) ?>">
                                                     <button type="submit" class="btn btn-outline-danger btn-sm">削除</button>
                                                 </form>
                                             </div>
@@ -143,7 +143,7 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center p-4">
-                    <p class="mb-0"><?= htmlspecialchars($_SESSION['error_message']) ?></p>
+                    <p class="mb-0"><?= h($_SESSION['error_message']) ?></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>

@@ -66,14 +66,12 @@ class Sale
             $sqlSale = "INSERT INTO sales (store_id, receipt_no, total_amount, tax_rate, sold_at) 
                         VALUES (:store_id, :receipt_no, :total_amount, :tax_rate, NOW())";
             
-            $this->db->execute($sqlSale, [
+            $saleId = $this->db->insert($sqlSale, [
                 'store_id' => $storeId,
                 'receipt_no' => $receiptNo,
                 'total_amount' => $data['total_amount'],
                 'tax_rate' => $taxRate
             ]);
-
-            $saleId = $this->db->lastInsertId();
 
             // 2. sale_items テーブルへ挿入
             $sqlItem = "INSERT INTO sale_items (sale_id, product_id, product_name, unit_price, quantity) 

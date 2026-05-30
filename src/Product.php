@@ -36,7 +36,12 @@ class Product
      */
     public function getAll(?int $categoryId = null, ?string $keyword = null): array
     {
-        $sql = "
+        $filters = [
+            'category_id' => $categoryId,
+            'keyword' => $keyword
+        ];
+
+        list($sql, $params) = $this->buildFilteredQuery("
             SELECT
                 p.id,
                 p.name,
@@ -44,26 +49,7 @@ class Product
                 p.is_takeout,
                 c.id   AS category_id,
                 c.name AS category_name
-            FROM products p
-            JOIN categories c ON p.category_id = c.id
-        ";
-
-        $params = [];
-        $conditions = [];
-
-        if ($categoryId !== null) {
-            $conditions[] = "p.category_id = :category_id";
-            $params['category_id'] = $categoryId;
-        }
-
-        if ($keyword !== null && $keyword !== '') {
-            $conditions[] = "p.name LIKE :keyword";
-            $params['keyword'] = "%{$keyword}%";
-        }
-
-        if (!empty($conditions)) {
-            $sql .= " WHERE " . implode(" AND ", $conditions);
-        }
+        ", $filters);
 
         $sql .= " ORDER BY c.id, p.id";
 
@@ -109,13 +95,12 @@ class Product
             INSERT INTO products (name, price, category_id, is_takeout)
             VALUES (:name, :price, :category_id, :is_takeout)
         ";
-        $this->db->execute($sql, [
+        return (int)$this->db->insert($sql, [
             'name'        => $data['name'],
             'price'       => $data['price'],
             'category_id' => $data['category_id'],
             'is_takeout'  => ($data['is_takeout'] ?? false) ? 1 : 0
         ]);
-        return (int)$this->db->lastInsertId();
     }
 
     /**
@@ -150,5 +135,36 @@ class Product
     {
         $sql = "DELETE FROM products WHERE id = :id";
         return $this->db->execute($sql, ['id' => $id]) > 0;
+    }
+
+    /**
+     * 共通のクエリビルドロジック
+     * 
+     * @param string $select
+     * @param array $filters
+     * @return array [string $sql, array $params]
+     */
+    private function buildFilteredQuery(string $select, array $filters): array
+    {
+        $params = [];
+        $sql = $select . " FROM products p JOIN categories c ON p.category_id = c.id";
+
+        $whereClauses = [];
+
+        if (!empty($filters['category_id'])) {
+            $whereClauses[] = "p.category_id = :category_id";
+            $params['category_id'] = $filters['category_id'];
+        }
+
+        if (!empty($filters['keyword'])) {
+            $whereClauses[] = "p.name LIKE :keyword";
+            $params['keyword'] = "%{$filters['keyword']}%";
+        }
+
+        if ($whereClauses) {
+            $sql .= " WHERE " . implode(" AND ", $whereClauses);
+        }
+
+        return [$sql, $params];
     }
 }

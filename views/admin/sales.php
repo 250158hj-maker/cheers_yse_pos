@@ -17,7 +17,7 @@ require_once __DIR__ . '/../layout/header.php';
 
 <div class="py-3">
     <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
-        <h1 class="h2 mb-0"><?php echo htmlspecialchars($pageTitle); ?></h1>
+        <h1 class="h2 mb-0"><?= h($pageTitle) ?></h1>
     </div>
 
     <!-- 検索・フィルタエリア -->
@@ -33,8 +33,8 @@ require_once __DIR__ . '/../layout/header.php';
                         <select name="store_id" id="store_id" class="form-select">
                             <option value="">すべての店舗</option>
                             <?php foreach ($stores as $s): ?>
-                                <option value="<?php echo $s['id']; ?>" <?php echo $filters['store_id'] == $s['id'] ? 'selected' : ''; ?>>
-                                    <?php echo htmlspecialchars($s['name']); ?>
+                                <option value="<?= h($s['id']) ?>" <?= $filters['store_id'] == $s['id'] ? 'selected' : '' ?>>
+                                    <?= h($s['name']) ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -45,8 +45,8 @@ require_once __DIR__ . '/../layout/header.php';
                         <select name="category_id" id="category_id" class="form-select">
                             <option value="">すべてのカテゴリ</option>
                             <?php foreach ($categories as $c): ?>
-                                <option value="<?php echo $c['id']; ?>" <?php echo $filters['category_id'] == $c['id'] ? 'selected' : ''; ?>>
-                                    <?php echo htmlspecialchars($c['name']); ?>
+                                <option value="<?= h($c['id']) ?>" <?= $filters['category_id'] == $c['id'] ? 'selected' : '' ?>>
+                                    <?= h($c['name']) ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -54,17 +54,17 @@ require_once __DIR__ . '/../layout/header.php';
 
                     <div class="col-md-4">
                         <label for="receipt_no" class="form-label small fw-bold">会計番号</label>
-                        <input type="text" name="receipt_no" id="receipt_no" class="form-control" value="<?php echo htmlspecialchars($filters['receipt_no']); ?>" placeholder="REC-0000">
+                        <input type="text" name="receipt_no" id="receipt_no" class="form-control" value="<?= h($filters['receipt_no']) ?>" placeholder="REC-0000">
                     </div>
 
                     <div class="col-md-4">
                         <label for="date_from" class="form-label small fw-bold">期間（開始）</label>
-                        <input type="date" name="date_from" id="date_from" class="form-control" value="<?php echo htmlspecialchars($filters['date_from']); ?>">
+                        <input type="date" name="date_from" id="date_from" class="form-control" value="<?= h($filters['date_from']) ?>">
                     </div>
 
                     <div class="col-md-4">
                         <label for="date_to" class="form-label small fw-bold">期間（終了）</label>
-                        <input type="date" name="date_to" id="date_to" class="form-control" value="<?php echo htmlspecialchars($filters['date_to']); ?>">
+                        <input type="date" name="date_to" id="date_to" class="form-control" value="<?= h($filters['date_to']) ?>">
                     </div>
 
                     <div class="col-md-4 d-flex align-items-end gap-2">
@@ -82,7 +82,7 @@ require_once __DIR__ . '/../layout/header.php';
             <div class="card bg-primary text-white shadow-sm">
                 <div class="card-body">
                     <h6 class="card-subtitle mb-2 opacity-75">合計売上額</h6>
-                    <h2 class="card-title mb-0">¥<?php echo number_format($summary['total_amount']); ?></h2>
+                    <h2 class="card-title mb-0">¥<?= number_format($summary['total_amount']) ?></h2>
                 </div>
             </div>
         </div>
@@ -90,7 +90,7 @@ require_once __DIR__ . '/../layout/header.php';
             <div class="card bg-success text-white shadow-sm">
                 <div class="card-body">
                     <h6 class="card-subtitle mb-2 opacity-75">合計会計件数</h6>
-                    <h2 class="card-title mb-0"><?php echo number_format($summary['count']); ?> <small>件</small></h2>
+                    <h2 class="card-title mb-0"><?= number_format($summary['count']) ?> <small>件</small></h2>
                 </div>
             </div>
         </div>
@@ -116,11 +116,11 @@ require_once __DIR__ . '/../layout/header.php';
                 <?php else: ?>
                     <?php foreach ($sales as $sale): ?>
                         <tr>
-                            <td><?php echo htmlspecialchars(date('Y/m/d H:i', strtotime($sale['sold_at']))); ?></td>
-                            <td><span class="badge bg-info text-dark"><?php echo htmlspecialchars($sale['store_name']); ?></span></td>
-                            <td><code class="text-dark bg-light px-2 py-1 rounded"><?php echo htmlspecialchars($sale['receipt_no']); ?></code></td>
-                            <td class="text-end fw-bold">¥<?php echo number_format($sale['total_amount']); ?></td>
-                            <td class="text-center"><?php echo (float)$sale['tax_rate'] * 100; ?>%</td>
+                            <td><?= h(date('Y/m/d H:i', strtotime($sale['sold_at']))) ?></td>
+                            <td><span class="badge bg-info text-dark"><?= h($sale['store_name']) ?></span></td>
+                            <td><code class="text-dark bg-light px-2 py-1 rounded"><?= h($sale['receipt_no']) ?></code></td>
+                            <td class="text-end fw-bold">¥<?= number_format($sale['total_amount']) ?></td>
+                            <td class="text-center"><?= (float)$sale['tax_rate'] * 100 ?>%</td>
                         </tr>
                     <?php endforeach; ?>
                 <?php endif; ?>
