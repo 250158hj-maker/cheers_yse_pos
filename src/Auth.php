@@ -9,10 +9,6 @@ require_once __DIR__ . '/Database.php';
 class Auth {
     /**
      * ログイン処理
-     * @param Database $db
-     * @param string $loginId
-     * @param string $password
-     * @return array|false 成功時はユーザー情報を、失敗時は false を返す
      */
     public static function login(Database $db, $loginId, $password) {
         try {
@@ -59,7 +55,7 @@ class Auth {
     }
 
     /**
-     * すでにログインしている場合はリダイレクトする（ログイン画面用）
+     * すでにログインしている場合はリダイレクトする
      */
     public static function redirectIfLoggedIn() {
         if (self::isLoggedIn()) {
@@ -130,10 +126,9 @@ class Auth {
 
     /**
      * 内部リダイレクトヘルパー
-     * @param string $path BASE_URL からの相対パス
      */
     public static function redirect(string $path) {
-        header('Location: ' . BASE_URL . $path);
+        header('Location: ' . url($path));
         exit;
     }
 }

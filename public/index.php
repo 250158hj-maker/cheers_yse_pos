@@ -10,4 +10,4 @@ require_once __DIR__ . '/../src/Auth.php';
 Auth::redirectIfLoggedIn();
 
 // 2. ログインしていない場合はログインViewを表示
-require_once __DIR__ . '/../views/login.php';
+view('login');

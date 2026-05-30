@@ -1,4 +1,7 @@
 <?php
+/**
+ * public/admin/products/index.php
+ */
 require_once __DIR__ . '/../../../src/Auth.php';
 Auth::requireAdmin();
 
@@ -8,20 +11,12 @@ require_once __DIR__ . '/../../../src/Product.php';
 $db      = new Database();
 $productModel = new Product($db);
 
-// 絞り込み条件をGETパラメータから取得
-$categoryId = isset($_GET['category_id']) && $_GET['category_id'] !== ''
-    ? (int)$_GET['category_id']
-    : null;
+// 絞り込み条件
+$categoryId = isset($_GET['category_id']) && $_GET['category_id'] !== '' ? (int)$_GET['category_id'] : null;
+$keyword    = isset($_GET['keyword']) && $_GET['keyword'] !== '' ? $_GET['keyword'] : null;
 
-$keyword = isset($_GET['keyword']) && $_GET['keyword'] !== ''
-    ? $_GET['keyword']
-    : null;
-
-// カテゴリ一覧を取得（プルダウン用）
-$categories = $productModel->getAllCategories();
-
-// 商品一覧を取得（絞り込み条件があれば絞り込む）
-$products = $productModel->getAll($categoryId, $keyword);
-
-// ビューの呼び出し
-require_once __DIR__ . '/../../../views/admin/products.php';
+// ビューへ渡すデータ
+view('admin/products', [
+    'categories' => $productModel->getAllCategories(),
+    'products'   => $productModel->getAll($categoryId, $keyword)
+]);

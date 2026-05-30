@@ -51,3 +51,43 @@ function json(array $data, int $status = 200): void
     echo json_encode($data);
     exit;
 }
+
+/**
+ * URLを生成する
+ */
+function url(string $path = ''): string
+{
+    $path = ltrim($path, '/');
+    return BASE_URL . $path;
+}
+
+/**
+ * Viewをレンダリングする
+ */
+function view(string $path, array $data = []): void
+{
+    // 配列のキーを変数名として展開
+    extract($data);
+    
+    // BASE_URL などの定数はそのまま使えるが、ヘルパー経由が望ましい
+    $baseUrl = url();
+    
+    // viewパスの解決 (.php がなければ付与)
+    $viewFile = __DIR__ . '/../views/' . ltrim($path, '/') . (str_ends_with($path, '.php') ? '' : '.php');
+    
+    if (file_exists($viewFile)) {
+        require_once $viewFile;
+    } else {
+        die("View file not found: {$viewFile}");
+    }
+}
+
+/**
+ * メッセージ付きでリダイレクトする
+ */
+function redirect_with_message(string $path, string $message, string $type = 'error'): void
+{
+    $_SESSION[$type] = $message;
+    header('Location: ' . url($path));
+    exit;
+}

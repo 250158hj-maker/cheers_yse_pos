@@ -10,7 +10,7 @@
             <section class="card mb-4">
                 <div class="card-header fw-bold">新規商品登録</div>
                 <div class="card-body">
-                    <form action="<?= $baseUrl ?>admin/products/store.php" method="post">
+                    <form action="<?= url('admin/products/store.php') ?>" method="post">
                         <?= csrf_field() ?>
                         <div class="row g-3 align-items-end">
 
@@ -61,7 +61,7 @@
                 <div class="card-body">
 
                     <!-- 絞り込みフォーム -->
-                    <form method="get" action="<?= $baseUrl ?>admin/products/index.php" class="row g-2 mb-3">
+                    <form method="get" action="<?= url('admin/products/index.php') ?>" class="row g-2 mb-3">
                         <div class="col-md-3">
                             <select name="category_id" class="form-select">
                                 <option value="">すべてのカテゴリ</option>
@@ -108,9 +108,9 @@
                                         <td><?= $product['is_takeout'] ? 'テイクアウト' : '店内' ?></td>
                                         <td>
                                             <div class="d-flex gap-1">
-                                                <a href="<?= $baseUrl ?>admin/products/edit.php?id=<?= $product['id'] ?>" 
+                                                <a href="<?= url('admin/products/edit.php?id=' . $product['id']) ?>" 
                                                    class="btn btn-outline-primary btn-sm">編集</a>
-                                                <form action="<?= $baseUrl ?>admin/products/delete.php" method="post"
+                                                <form action="<?= url('admin/products/delete.php') ?>" method="post"
                                                     onsubmit="return confirm('本当に削除しますか？')">
                                                     <?= csrf_field() ?>
                                                     <input type="hidden" name="id" value="<?= h($product['id']) ?>">
@@ -134,16 +134,16 @@
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
 
 <!-- エラー通知モーダル -->
-<?php if (isset($_SESSION['error_message'])): ?>
+<?php if (isset($_SESSION['error'])): ?>
     <div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">削除エラー</h5>
+                    <h5 class="modal-title">エラー</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center p-4">
-                    <p class="mb-0"><?= h($_SESSION['error_message']) ?></p>
+                    <p class="mb-0"><?= h($_SESSION['error']) ?></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
@@ -157,5 +157,5 @@
             errorModal.show();
         });
     </script>
-    <?php unset($_SESSION['error_message']); ?>
+    <?php unset($_SESSION['error']); ?>
 <?php endif; ?>
