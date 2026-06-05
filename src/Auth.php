@@ -83,6 +83,17 @@ class Auth {
     }
 
     /**
+     * スタッフ（非管理者）チェック（ガード）
+     */
+    public static function requireStaff() {
+        self::requireLogin();
+        // もし管理者(is_admin == 1)だったら、管理者用の画面へ強制リダイレクト
+        if (self::isAdmin()) {
+            self::redirect('admin/index.php');
+        }
+    }
+
+    /**
      * ログイン中か判定
      */
     public static function isLoggedIn() {
