@@ -134,7 +134,7 @@
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
 
 <!-- エラー通知モーダル -->
-<?php if (isset($_SESSION['error'])): ?>
+<?php if (isset($_SESSION['error_message'])): ?>
     <div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -143,7 +143,7 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center p-4">
-                    <p class="mb-0"><?= h($_SESSION['error']) ?></p>
+                    <p class="mb-0"><?= h($_SESSION['error_message']) ?></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
