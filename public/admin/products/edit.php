@@ -1,26 +1,27 @@
 <?php
+/**
+ * public/admin/products/edit.php
+ */
 require_once __DIR__ . '/../../../src/Auth.php';
 Auth::requireAdmin();
 
 require_once __DIR__ . '/../../../src/Database.php';
 require_once __DIR__ . '/../../../src/Product.php';
 
-$id = isset($_GET['id']) ? (int)$_GET['id'] : null;
-
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 if (!$id) {
-    header('Location: index.php');
-    exit;
+    Auth::redirect('admin/products/index.php');
 }
 
-$productModel = new Product();
+$db = new Database();
+$productModel = new Product($db);
 $product = $productModel->getById($id);
 
 if (!$product) {
-    header('Location: index.php');
-    exit;
+    Auth::redirect('admin/products/index.php');
 }
 
-$categories = $productModel->getAllCategories();
-
-// ビューの呼び出し
-require_once __DIR__ . '/../../../views/admin/product_edit.php';
+view('admin/product_edit', [
+    'product'    => $product,
+    'categories' => $productModel->getAllCategories()
+]);

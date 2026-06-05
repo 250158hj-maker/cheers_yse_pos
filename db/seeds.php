@@ -64,13 +64,13 @@ try {
 
     // 会計1: コーヒー2つ
     $total1 = 450 * 2;
-    $db->execute($saleSql, [$storeId, 'REC-0001', $total1, 0.10, date('Y-m-d H:i:s', strtotime('-1 hour'))]);
+    $db->execute($saleSql, [$storeId, 'REC-0001', $total1, TAX_RATE_NORMAL, date('Y-m-d H:i:s', strtotime('-1 hour'))]);
     $saleId1 = $db->lastInsertId();
     $db->execute($itemSql, [$saleId1, $sampleProductIds[0]['id'],'ブレンドコーヒー', 450, 2]);
 
     // 会計2: ケーキ1つ + ティー1つ
     $total2 = 600 + 500;
-    $db->execute($saleSql, [$storeId, 'REC-0002', $total2, 0.10, date('Y-m-d H:i:s')]);
+    $db->execute($saleSql, [$storeId, 'REC-0002', $total2, TAX_RATE_NORMAL, date('Y-m-d H:i:s')]);
     $saleId2 = $db->lastInsertId();
     $db->execute($itemSql, [$saleId2, $sampleProductIds[4]['id'], 'ベイクドチーズケーキ', 600, 1]);
     $db->execute($itemSql, [$saleId2, $sampleProductIds[3]['id'], 'ダージリンティー', 500, 1]);

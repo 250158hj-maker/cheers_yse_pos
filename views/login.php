@@ -5,11 +5,6 @@
  * --- 処理部 (Processing) ---
  */
 
-// セッション開始
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
 // Authクラスを読み込む
 require_once __DIR__ . '/../src/Auth.php';
 
@@ -43,13 +38,13 @@ $csrfToken = Auth::generateCsrfToken();
                 <?php if ($errorMessage): ?>
                     <div class="alert alert-danger d-flex align-items-center" role="alert">
                         <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                        <div><?php echo htmlspecialchars($errorMessage); ?></div>
+                        <div><?= h($errorMessage) ?></div>
                     </div>
                 <?php endif; ?>
 
                 <form action="./login.php" method="POST">
                     <!-- CSRFトークン -->
-                    <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
+                    <?= csrf_field() ?>
                     
                     <div class="mb-4">
                         <label for="login_id" class="form-label fw-bold">店舗ID または 管理者ID</label>
@@ -57,7 +52,7 @@ $csrfToken = Auth::generateCsrfToken();
                             <span class="input-group-text bg-light"><i class="bi bi-person"></i></span>
                             <input type="text" id="login_id" name="login_id" 
                                    class="form-control form-control-lg"
-                                   value="<?php echo htmlspecialchars($lastLoginId); ?>" 
+                                   value="<?= h($lastLoginId) ?>" 
                                    inputmode="numeric" pattern="\d{4}" maxlength="4"
                                    required autofocus placeholder="数字4桁">
                         </div>

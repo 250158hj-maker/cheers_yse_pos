@@ -50,8 +50,8 @@
                         </li>
                         <?php foreach ($categories as $category): ?>
                             <li class="nav-item">
-                                <a class="nav-link py-1" href="#" data-category-id="<?php echo $category['id']; ?>">
-                                    <?php echo htmlspecialchars($category['name']); ?>
+                                <a class="nav-link py-1" href="#" data-category-id="<?= h($category['id']) ?>">
+                                    <?= h($category['name']) ?>
                                 </a>
                             </li>
                         <?php endforeach; ?>
@@ -60,13 +60,13 @@
                 <div class="card-body" id="product-grid-container">
                     <div class="row g-2" id="product-grid">
                         <?php foreach ($products as $product): ?>
-                            <div class="col-4 product-item" data-category-id="<?php echo $product['category_id']; ?>">
+                            <div class="col-4 product-item" data-category-id="<?= h($product['category_id']) ?>">
                                 <button class="btn btn-outline-primary w-100 d-flex flex-column align-items-center justify-content-center btn-py-custom" 
-                                        data-product-id="<?php echo $product['id']; ?>"
-                                        data-product-name="<?php echo htmlspecialchars($product['name']); ?>"
-                                        data-product-price="<?php echo $product['price']; ?>">
-                                    <span class="fw-bold small"><?php echo htmlspecialchars($product['name']); ?></span>
-                                    <small class="text-muted">¥<?php echo number_format($product['price']); ?></small>
+                                        data-product-id="<?= h($product['id']) ?>"
+                                        data-product-name="<?= h($product['name']) ?>"
+                                        data-product-price="<?= h($product['price']) ?>">
+                                    <span class="fw-bold small"><?= h($product['name']) ?></span>
+                                    <small class="text-muted">¥<?= number_format($product['price']) ?></small>
                                 </button>
                             </div>
                         <?php endforeach; ?>
@@ -143,7 +143,7 @@
                             <span class="h5 text-danger mb-0" id="change-amount">¥ 0</span>
                         </div>
                         <form id="checkout-form" action="checkout.php" method="POST">
-                            <input type="hidden" name="csrf_token" value="<?php echo $csrfToken; ?>">
+                            <?= csrf_field() ?>
                             <input type="hidden" name="order_data" id="order-data-input">
                             <button type="button" class="btn btn-success btn-lg w-100" id="checkout-btn">計上 (F10)</button>
                         </form>
@@ -172,7 +172,7 @@
                     <p class="h5 mb-2">計上が完了しました。</p>
                     <div class="bg-light p-3 rounded shadow-sm mb-3">
                         <p class="small text-muted mb-1">お釣り</p>
-                        <p class="h1 mb-0 text-danger fw-bold">¥ <?php echo number_format($_SESSION['last_change'] ?? 0); ?></p>
+                        <p class="h1 mb-0 text-danger fw-bold">¥ <?= number_format($_SESSION['last_change'] ?? 0) ?></p>
                     </div>
                     <button type="button" class="btn btn-primary btn-lg w-100" data-bs-dismiss="modal">次へ進む (閉じる)</button>
                 </div>
@@ -223,9 +223,13 @@
 <?php endif; ?>
 
 <!-- レジ画面専用JavaScript -->
+<script>
+    // PHPの定数をJavaScriptへ渡す
+    window.TAX_CONFIG = {
+        NORMAL: <?= TAX_RATE_NORMAL ?>,
+        REDUCED: <?= TAX_RATE_REDUCED ?>
+    };
+</script>
 <script src="../js/register.js"></script>
 
 <?php require_once __DIR__ . '/layout/footer.php'; ?>
-
-
-

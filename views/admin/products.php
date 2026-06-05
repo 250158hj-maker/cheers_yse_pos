@@ -10,8 +10,8 @@
             <section class="card mb-4">
                 <div class="card-header fw-bold">新規商品登録</div>
                 <div class="card-body">
-                    <form action="<?= $baseUrl ?>admin/products/store.php" method="post">
-                        <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
+                    <form action="<?= url('admin/products/store.php') ?>" method="post">
+                        <?= csrf_field() ?>
                         <div class="row g-3 align-items-end">
 
                             <div class="col-md-3">
@@ -29,8 +29,8 @@
                                 <select name="category_id" class="form-select" required>
                                     <option value="">選択してください</option>
                                     <?php foreach ($categories as $category): ?>
-                                        <option value="<?= htmlspecialchars($category['id']) ?>">
-                                            <?= htmlspecialchars($category['name']) ?>
+                                        <option value="<?= h($category['id']) ?>">
+                                            <?= h($category['name']) ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -61,14 +61,14 @@
                 <div class="card-body">
 
                     <!-- 絞り込みフォーム -->
-                    <form method="get" action="<?= $baseUrl ?>admin/products/index.php" class="row g-2 mb-3">
+                    <form method="get" action="<?= url('admin/products/index.php') ?>" class="row g-2 mb-3">
                         <div class="col-md-3">
                             <select name="category_id" class="form-select">
                                 <option value="">すべてのカテゴリ</option>
                                 <?php foreach ($categories as $category): ?>
-                                    <option value="<?= htmlspecialchars($category['id']) ?>"
+                                    <option value="<?= h($category['id']) ?>"
                                         <?= (isset($_GET['category_id']) && $_GET['category_id'] == $category['id']) ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($category['name']) ?>
+                                        <?= h($category['name']) ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
@@ -76,7 +76,7 @@
                         <div class="col-md-4">
                             <input type="text" name="keyword" class="form-control"
                                 placeholder="商品名を入力..."
-                                value="<?= htmlspecialchars($_GET['keyword'] ?? '') ?>">
+                                value="<?= h($_GET['keyword'] ?? '') ?>">
                         </div>
                         <div class="col-md-2">
                             <button type="submit" class="btn btn-secondary w-100">検索</button>
@@ -101,19 +101,19 @@
                             <tbody>
                                 <?php foreach ($products as $product): ?>
                                     <tr>
-                                        <td><?= htmlspecialchars($product['id']) ?></td>
-                                        <td><?= htmlspecialchars($product['name']) ?></td>
+                                        <td><?= h($product['id']) ?></td>
+                                        <td><?= h($product['name']) ?></td>
                                         <td>¥<?= number_format($product['price']) ?></td>
-                                        <td><?= htmlspecialchars($product['category_name']) ?></td>
+                                        <td><?= h($product['category_name']) ?></td>
                                         <td><?= $product['is_takeout'] ? 'テイクアウト' : '店内' ?></td>
                                         <td>
                                             <div class="d-flex gap-1">
-                                                <a href="<?= $baseUrl ?>admin/products/edit.php?id=<?= $product['id'] ?>" 
+                                                <a href="<?= url('admin/products/edit.php?id=' . $product['id']) ?>" 
                                                    class="btn btn-outline-primary btn-sm">編集</a>
-                                                <form action="<?= $baseUrl ?>admin/products/delete.php" method="post"
+                                                <form action="<?= url('admin/products/delete.php') ?>" method="post"
                                                     onsubmit="return confirm('本当に削除しますか？')">
-                                                    <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
-                                                    <input type="hidden" name="id" value="<?= htmlspecialchars($product['id']) ?>">
+                                                    <?= csrf_field() ?>
+                                                    <input type="hidden" name="id" value="<?= h($product['id']) ?>">
                                                     <button type="submit" class="btn btn-outline-danger btn-sm">削除</button>
                                                 </form>
                                             </div>
@@ -134,16 +134,16 @@
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>
 
 <!-- エラー通知モーダル -->
-<?php if (isset($_SESSION['error_message'])): ?>
+<?php if (isset($_SESSION['error'])): ?>
     <div class="modal fade" id="errorModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">削除エラー</h5>
+                    <h5 class="modal-title">エラー</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center p-4">
-                    <p class="mb-0"><?= htmlspecialchars($_SESSION['error_message']) ?></p>
+                    <p class="mb-0"><?= h($_SESSION['error']) ?></p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
@@ -157,5 +157,5 @@
             errorModal.show();
         });
     </script>
-    <?php unset($_SESSION['error_message']); ?>
+    <?php unset($_SESSION['error']); ?>
 <?php endif; ?>

@@ -8,7 +8,7 @@
 
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="h4 mb-0">商品編集</h2>
-                <a href="<?= $baseUrl ?>admin/products/index.php" class="btn btn-outline-secondary">
+                <a href="<?= url('admin/products/index.php') ?>" class="btn btn-outline-secondary">
                     一覧に戻る
                 </a>
             </div>
@@ -17,21 +17,21 @@
             <section class="card">
                 <div class="card-header fw-bold">商品情報の変更</div>
                 <div class="card-body">
-                    <form action="<?= $baseUrl ?>admin/products/update.php" method="post">
-                        <input type="hidden" name="csrf_token" value="<?= $csrfToken ?>">
-                        <input type="hidden" name="id" value="<?= htmlspecialchars($product['id']) ?>">
+                    <form action="<?= url('admin/products/update.php') ?>" method="post">
+                        <?= csrf_field() ?>
+                        <input type="hidden" name="id" value="<?= h($product['id']) ?>">
 
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
                                 <label class="form-label">商品名</label>
                                 <input type="text" name="name" class="form-control" 
-                                    value="<?= htmlspecialchars($product['name']) ?>" required>
+                                    value="<?= h($product['name']) ?>" required>
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label">価格（円）</label>
                                 <input type="number" name="price" class="form-control" 
-                                    value="<?= htmlspecialchars($product['price']) ?>" min="0" required>
+                                    value="<?= h($product['price']) ?>" min="0" required>
                             </div>
                         </div>
 
@@ -41,9 +41,9 @@
                                 <select name="category_id" class="form-select" required>
                                     <option value="">選択してください</option>
                                     <?php foreach ($categories as $category): ?>
-                                        <option value="<?= htmlspecialchars($category['id']) ?>"
+                                        <option value="<?= h($category['id']) ?>"
                                             <?= $product['category_id'] == $category['id'] ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($category['name']) ?>
+                                            <?= h($category['name']) ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>

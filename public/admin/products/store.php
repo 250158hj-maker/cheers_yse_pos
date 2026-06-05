@@ -21,8 +21,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $isTakeout = $_POST['is_takeout'] ?? 0;
 
     if (!empty($name) && $price >= 0 && !empty($categoryId)) {
-        $product = new Product();
-        $product->store([
+        require_once __DIR__ . '/../../../src/Database.php';
+        $db = new Database();
+        $productModel = new Product($db);
+        $productModel->store([
             'name'        => $name,
             'price'       => (int)$price,
             'category_id' => (int)$categoryId,

@@ -15,7 +15,7 @@ $copyRight = "© {$currentYear} Cheers YSE POS All Rights Reserved.";
     
     <footer class="mt-5 py-4 border-top text-center text-muted small">
         <div class="container">
-            <p class="mb-0"><?php echo htmlspecialchars($copyRight); ?></p>
+            <p class="mb-0"><?= h($copyRight) ?></p>
         </div>
     </footer>
 

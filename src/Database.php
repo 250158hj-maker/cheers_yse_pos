@@ -48,7 +48,16 @@ class Database
     }
 
     /**
-     * 直近INSERTの自動採番ID。sales挿入後に sale_items を紐付ける用途。
+     * INSERT を実行し、新規発行されたIDを返す。
+     */
+    public function insert(string $sql, array $params = []): string
+    {
+        $this->execute($sql, $params);
+        return $this->lastInsertId();
+    }
+
+    /**
+     * 直近INSERTの自動採番ID。
      */
     public function lastInsertId(): string
     {
@@ -73,7 +82,28 @@ class Database
     }
 
     /**
-     * スキーマ定義（DDL）専用の生SQL一括実行。複数文のCREATE TABLE等を
+     * トランザクションを自動管理する。
+     * コールバック内で例外が発生した場合は自動的にロールバックし、例外を再スローする。
+     * 正常終了した場合は自動的にコミットする。
+     */
+    public function transaction(callable $callback)
+    {
+        try {
+            $this->beginTransaction();
+            $result = $callback($this);
+            $this->commit();
+            return $result;
+        } catch (Throwable $e) {
+            if ($this->pdo->inTransaction()) {
+                $this->rollBack();
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * スキーマ定義（DDL）専用の生SQL一括実行。
+複数文のCREATE TABLE等を
      * プリペアド化せず実行する用途に限定する。ユーザー入力を渡してはならない
      * （データ操作は必ず fetch / execute のプリペアドを使うこと）。
      */
