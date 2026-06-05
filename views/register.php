@@ -207,15 +207,7 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body text-center p-4">
-                    <p class="h5 mb-0">
-                        <?php
-                        if (($_GET['error'] ?? '') === 'too_much_received') {
-                            echo '預り金が多すぎます。正しい金額を入力してください。';
-                        } else {
-                            echo '計上に失敗しました。';
-                        }
-                        ?>
-                    </p>
+                    <p class="h5 mb-0">計上に失敗しました。</p>
                     <p class="small text-muted mt-2">データを確認して再度お試しください。</p>
                     <button type="button" class="btn btn-secondary mt-3" data-bs-dismiss="modal">閉じる</button>
                 </div>

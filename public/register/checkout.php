@@ -25,12 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $json = $_POST['order_data'] ?? '';
     $data = json_decode($json, true);
 
-    $total = $data['total_amount'] ?? 0;
-    $received = $data['received_amount'] ?? 0;
-    if ($received >= 10000 && $received > $total * 3) {
-    header('Location: index.php?error=too_much_received');
-        exit;
-    }
     // バリデーション
     if (!$data || empty($data['items'])) {
         header('Location: index.php?error=invalid_data');
