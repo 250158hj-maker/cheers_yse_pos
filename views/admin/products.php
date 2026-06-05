@@ -157,5 +157,5 @@
             errorModal.show();
         });
     </script>
-    <?php unset($_SESSION['error']); ?>
+    <?php unset($_SESSION['error_message']); ?>
 <?php endif; ?>
