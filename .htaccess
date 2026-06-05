@@ -1,0 +1,13 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # 1. すでに public/ を参照している場合は、これ以上書き換えない（無限ループ防止）
+    RewriteRule ^public/ - [L]
+
+    # 2. 直接アクセスを拒否したいディレクトリへのアクセスは、明示的に index.php へリダイレクト
+    RewriteRule ^(src|views|config|db|vendor|docs)/ /cheers_yse_pos/index.php [R=302,L]
+    RewriteRule ^\.env /cheers_yse_pos/index.php [R=302,L]
+
+    # 3. すべてのリクエストを public ディレクトリへ転送
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>

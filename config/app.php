@@ -14,7 +14,8 @@ $dotenv->load();
 $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
 $publicPos = strpos($scriptName, '/public/');
 if ($publicPos !== false) {
-    $baseUrl = substr($scriptName, 0, $publicPos + 8);
+    // "/public/" より前の部分を取得し、最後に "/" をつける
+    $baseUrl = substr($scriptName, 0, $publicPos) . '/';
 } else {
     $baseUrl = '/';
 }
@@ -76,7 +77,7 @@ function view(string $path, array $data = []): void
     $viewFile = __DIR__ . '/../views/' . ltrim($path, '/') . (str_ends_with($path, '.php') ? '' : '.php');
     
     if (file_exists($viewFile)) {
-        require_once $viewFile;
+        require $viewFile;
     } else {
         die("View file not found: {$viewFile}");
     }
