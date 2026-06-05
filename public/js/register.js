@@ -62,11 +62,19 @@ document.addEventListener('DOMContentLoaded', function() {
     numButtons.forEach(btn => {
         btn.addEventListener('click', function() {
             const val = this.getAttribute('data-value');
-            if (calcInput === '0') {
-                calcInput = val;
-            } else {
-                calcInput += val;
+            let nextInput = (calcInput === '0') ? val : calcInput + val;
+             
+            // 【追加】上限バリデーション
+             const total = currentOrder.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+             const nextReceived = parseInt(nextInput);
+            
+            // 条件: 10,000円以上 かつ 合計の3倍超え
+            if (nextReceived >= 10000 && nextReceived > total * 3) {
+                alert('預り金が過大です（10,000円以上かつ合計の3倍を超えています）');
+                return; // 入力を反映させない
             }
+   
+            calcInput = nextInput;
             updateCalcDisplay();
             updateChange();
         });
@@ -214,6 +222,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const received = parseInt(calcInput);
         if (received < total) {
             alert('預り金が不足しています');
+            return;
+        }
+        if (received >= 10000 && received > total * 3) {
+            alert('預り金が過大です。入力し直してください。');
             return;
         }
         if (!confirm('計上しますか？')) return;

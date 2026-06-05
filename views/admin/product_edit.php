@@ -31,7 +31,7 @@
                             <div class="col-md-6">
                                 <label class="form-label">価格（円）</label>
                                 <input type="number" name="price" class="form-control" 
-                                    value="<?= h($product['price']) ?>" min="0" required>
+                                    value="<?= h($product['price']) ?>" min="0" max="10000000" required>
                             </div>
                         </div>
 

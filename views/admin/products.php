@@ -21,7 +21,7 @@
 
                             <div class="col-md-2">
                                 <label class="form-label">価格（円）</label>
-                                <input type="number" name="price" class="form-control" min="0" required>
+                                <input type="number" name="price" class="form-control" min="0" max="10000000" required>
                             </div>
 
                             <div class="col-md-3">
